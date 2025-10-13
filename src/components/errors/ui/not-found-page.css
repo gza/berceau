@@ -1,0 +1,22 @@
+/* 404 Not Found page specific styles */
+
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 50vh;
+}
+
+.not-found-page h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #303030;
+}
+
+.not-found-page p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}

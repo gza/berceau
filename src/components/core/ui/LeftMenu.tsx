@@ -17,32 +17,16 @@ export interface LeftMenuProps {
 
 export function LeftMenu({ currentPath }: LeftMenuProps = {}) {
   return (
-    <nav
-      style={{
-        width: "200px",
-        backgroundColor: "#f5f5f5",
-        padding: "20px",
-        borderRight: "1px solid #ddd",
-      }}
-    >
+    <nav>
       <h2>Navigation</h2>
-      <ul style={{ listStyle: "none", padding: "0" }}>
+      <ul>
         {menuItems.map((item) => {
           const isActive = currentPath === item.path
 
           return (
-            <li key={item.path} style={{ marginBottom: "10px" }}>
+            <li key={item.path}>
               <a
                 href={item.path}
-                style={{
-                  textDecoration: "none",
-                  color: "#333",
-                  padding: "8px 12px",
-                  display: "block",
-                  borderRadius: "4px",
-                  fontWeight: isActive ? "bold" : "normal",
-                  backgroundColor: isActive ? "#e0e0e0" : "transparent",
-                }}
                 aria-current={isActive ? "page" : undefined}
               >
                 {item.icon} {item.label}

@@ -22,16 +22,6 @@ describe("NotFoundPage Component", () => {
     expect(backLink).toHaveAttribute("href", "/")
   })
 
-  it("should style the back link correctly", () => {
-    render(<NotFoundPage />)
-    
-    const backLink = screen.getByRole("link", { name: /go back to the welcome page/i })
-    expect(backLink).toHaveStyle({
-      color: "#007bff",
-      textDecoration: "none",
-    })
-  })
-
   it("should render the component structure correctly", () => {
     render(<NotFoundPage />)
 

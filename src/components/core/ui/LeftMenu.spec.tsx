@@ -22,12 +22,11 @@ describe("LeftMenu Component", () => {
     expect(aboutLink).toHaveAttribute("href", "/about")
   })
 
-  it("should render as a nav element with proper styling", () => {
+  it("should render as a nav element", () => {
     render(<LeftMenu />)
     
     const navElement = screen.getByRole("navigation")
     expect(navElement).toBeInTheDocument()
-    expect(navElement).toHaveStyle({ width: "200px" })
   })
 
   it("should render all menu items in a list", () => {
@@ -45,7 +44,6 @@ describe("LeftMenu Component", () => {
 
     const aboutLink = screen.getByRole("link", { name: /about/i })
     expect(aboutLink).toHaveAttribute("aria-current", "page")
-    expect(aboutLink).toHaveStyle({ fontWeight: "bold" })
 
     const welcomeLink = screen.getByRole("link", { name: /welcome/i })
     expect(welcomeLink).not.toHaveAttribute("aria-current")

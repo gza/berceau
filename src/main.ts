@@ -1,10 +1,21 @@
 import { Logger } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
+import { NestExpressApplication } from "@nestjs/platform-express"
+import { join } from "path"
 import { AppModule } from "./app.module"
 
+// Declare module for Hot Module Replacement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const module: any
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
   const logger = new Logger("Bootstrap")
+
+  // Serve static assets from dist/assets/ at /assets/ URL
+  app.useStaticAssets(join(__dirname, "assets"), {
+    prefix: "/assets/",
+  })
 
   // In production, you would integrate Vite as middleware here
   // For development, we'll use the simple SSR approach
@@ -16,6 +27,17 @@ async function bootstrap() {
   const port = 3000
   await app.listen(port)
   logger.log(`Application is running on: http://localhost:${port}`)
+
+  // Hot Module Replacement
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (module.hot) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    module.hot.accept()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    module.hot.dispose(() => app.close())
+  }
 }
 bootstrap().catch((error) => {
   const logger = new Logger("Bootstrap")

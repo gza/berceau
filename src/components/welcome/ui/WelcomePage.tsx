@@ -1,10 +1,17 @@
-import svg from "./welcome.svg"
+// Direct SVG import - webpack will handle this
+import welcomeSvg from "./welcome.svg"
+import styles from "./welcome-page.css"
 
-export function WelcomePage() {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface Props {}
+
+export function WelcomePage(_props: Props) {
   // get current date
   const currentDate = new Date().toLocaleDateString()
   return (
-    <div>
+    <div className="welcome-page">
+      <link rel="stylesheet" href={styles} />
+      <img src={welcomeSvg} alt="Welcome" />
       <h1>Welcome to the Monobackend on {currentDate}</h1>
       <p>
         This is the main welcome page of the Monobackend application. 

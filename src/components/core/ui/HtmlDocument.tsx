@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import styles from "./styles.css"
 
 export interface HtmlDocumentProps {
   children: ReactNode
@@ -17,6 +18,7 @@ export function HtmlDocument({
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{title}</title>
+        <link rel="stylesheet" href={styles} />
       </head>
       <body>
         <div id="root">

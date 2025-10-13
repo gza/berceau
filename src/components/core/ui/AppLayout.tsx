@@ -8,9 +8,9 @@ export interface AppLayoutProps {
 
 export function AppLayout({ children, currentPath }: AppLayoutProps) {
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div>
       <LeftMenu currentPath={currentPath} />
-      <main style={{ flex: 1, padding: "20px" }}>
+      <main>
         {children}
       </main>
     </div>

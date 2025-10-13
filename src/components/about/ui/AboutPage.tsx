@@ -1,6 +1,9 @@
+import styles from "./about-page.css"
+
 export function AboutPage() {
   return (
-    <div>
+    <div className="about-page">
+      <link rel="stylesheet" href={styles} />
       <h1>About Us</h1>
       <p>
         The Monobackend project demonstrates a modern web application architecture 
