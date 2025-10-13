@@ -1,0 +1,125 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1200 360"
+    role="img"
+    aria-labelledby="title desc"
+    focusable="false"
+>
+    <title id="title">Welcome</title>
+    <desc id="desc">A decorative banner with the word Welcome centered on a colorful gradient background.</desc>
+
+    <defs>
+        <!-- Background gradient -->
+        <linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0ea5e9"/>
+            <stop offset="50%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#9333ea"/>
+        </linearGradient>
+
+        <!-- Accent radial glows -->
+        <radialGradient id="glowA" cx="0.2" cy="0.2" r="0.5">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0.25"/>
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="glowB" cx="0.85" cy="0.7" r="0.5">
+            <stop offset="0" stop-color="#22d3ee" stop-opacity="0.25"/>
+            <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Soft shadow for text -->
+        <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+        </filter>
+
+        <!-- Text gradient -->
+        <linearGradient id="textGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#e5e7eb"/>
+        </linearGradient>
+
+        <!-- Subtext gradient -->
+        <linearGradient id="subTextGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#f8fafc" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#e2e8f0" stop-opacity="0.9"/>
+        </linearGradient>
+
+        <!-- Grain texture -->
+        <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" seed="7"/>
+            <feColorMatrix type="saturate" values="0"/>
+            <feComponentTransfer>
+                <feFuncA type="table" tableValues="0 0 0 0 0.05 0.08 0.1 0.12"/>
+            </feComponentTransfer>
+            <feBlend mode="overlay"/>
+        </filter>
+    </defs>
+
+    <style>
+        /* Responsive text sizing */
+        @media (max-width: 640px) {
+            text#headline { font-size: 56px; }
+            text#subline { font-size: 18px; }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+            text#headline { font-size: 84px; }
+            text#subline { font-size: 22px; }
+        }
+        @media (min-width: 1025px) {
+            text#headline { font-size: 112px; }
+            text#subline { font-size: 24px; }
+        }
+
+        /* Dark mode adjustments */
+        @media (prefers-color-scheme: dark) {
+            #bg { opacity: 0.95; }
+            #textFill stop[offset="100%"] { stop-color: #f1f5f9; }
+            #subTextFill stop[offset="0%"] { stop-color: #e2e8f0; }
+            #subTextFill stop[offset="100%"] { stop-color: #cbd5e1; }
+        }
+    </style>
+
+    <!-- Background card -->
+    <rect x="12" y="12" width="1176" height="336" rx="28" fill="url(#bgGradient)"/>
+
+    <!-- Subtle glows -->
+    <rect x="12" y="12" width="1176" height="336" fill="url(#glowA)" rx="28" opacity="0.9"/>
+    <rect x="12" y="12" width="1176" height="336" fill="url(#glowB)" rx="28" opacity="0.9"/>
+
+    <!-- Grain for texture -->
+    <rect x="12" y="12" width="1176" height="336" rx="28" fill="#000" opacity="0.15" filter="url(#grain)"/>
+
+    <!-- Headline -->
+    <g filter="url(#softShadow)">
+        <text
+            id="headline"
+            x="50%"
+            y="49%"
+            text-anchor="middle"
+            dominant-baseline="central"
+            fill="url(#textGradient)"
+            font-family="Inter, Segoe UI, Roboto, Helvetica, Arial, system-ui, -apple-system, sans-serif"
+            font-weight="800"
+            letter-spacing="0.02em"
+        >Welcome</text>
+    </g>
+
+    <!-- Subline -->
+    <text
+        id="subline"
+        x="50%"
+        y="64%"
+        text-anchor="middle"
+        dominant-baseline="central"
+        fill="url(#subTextGradient)"
+        font-family="Inter, Segoe UI, Roboto, Helvetica, Arial, system-ui, -apple-system, sans-serif"
+        font-weight="500"
+        letter-spacing="0.025em"
+    >We’re glad you’re here</text>
+
+    <!-- Decorative corner orbits -->
+    <g opacity="0.4">
+        <circle cx="1080" cy="70" r="34" fill="none" stroke="#ffffff" stroke-opacity="0.5"/>
+        <circle cx="1080" cy="70" r="54" fill="none" stroke="#ffffff" stroke-opacity="0.25"/>
+        <circle cx="1080" cy="70" r="80" fill="none" stroke="#ffffff" stroke-opacity="0.12"/>
+    </g>
+</svg>

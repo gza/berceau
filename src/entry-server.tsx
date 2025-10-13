@@ -1,0 +1,1 @@
+export { renderPage as render } from "./ssr/renderPage"
