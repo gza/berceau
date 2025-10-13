@@ -6,7 +6,9 @@ describe("About Page Integration", () => {
     render(<AboutPage />)
 
     // Expect the About Us heading to be rendered
-    expect(screen.getByRole("heading", { name: /about us/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: /about us/i }),
+    ).toBeInTheDocument()
   })
 
   it("should render technology stack information", () => {

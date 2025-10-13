@@ -9,7 +9,7 @@ export interface HtmlDocumentProps {
 
 export function HtmlDocument({
   children,
-  title = "Monobackend",
+  title = "NesTsx",
   scripts = [],
 }: HtmlDocumentProps) {
   return (
@@ -21,9 +21,7 @@ export function HtmlDocument({
         <link rel="stylesheet" href={styles} />
       </head>
       <body>
-        <div id="root">
-          {children}
-        </div>
+        <div id="root">{children}</div>
         {scripts.map((script) => (
           <script key={script} type="module" src={script} />
         ))}

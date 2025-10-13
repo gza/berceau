@@ -1,6 +1,6 @@
 # General Architecture
 
-**Project**: Monobackend  
+**Project**: NesTsx  
 **Type**: NestJS + React Server-Side Rendering (SSR)  
 **Last Updated**: October 2025  
 **Based on**: Spec 001-initiate-the-application
@@ -26,7 +26,7 @@
 
 ## Overview
 
-Monobackend is a **unified web application** that combines NestJS backend services with React frontend components in a single codebase. The architecture follows a **domain-driven design** where UI and backend logic are co-located by feature, creating self-contained, maintainable modules.
+NesTsx is a **unified web application** that combines NestJS backend services with React frontend components in a single codebase. The architecture follows a **domain-driven design** where UI and backend logic are co-located by feature, creating self-contained, maintainable modules.
 
 ### Key Characteristics
 
@@ -100,7 +100,7 @@ Tests are written before implementation:
 ## Project Structure
 
 ```
-monobackend/
+nestsx/
 ├── src/
 │   ├── main.ts                          # Application entry point (Bootstrap + HMR)
 │   ├── app.module.ts                    # Root NestJS module
@@ -724,7 +724,7 @@ it('should render Welcome page with heading', async () => {
   })
   
   const { getByRole } = render(html)
-  expect(getByRole('heading')).toHaveTextContent('Welcome to the Monobackend')
+  expect(getByRole('heading')).toHaveTextContent('Welcome to the NesTsx')
 })
 ```
 
@@ -828,7 +828,7 @@ npm run test:cov      # With coverage
 ```bash
 # Clone repository
 git clone <repository-url>
-cd monobackend
+cd nestsx
 
 # Install dependencies
 npm install
@@ -942,7 +942,7 @@ export NODE_ENV=production
 npm start
 
 # Or use process manager
-pm2 start dist/main.js --name monobackend
+pm2 start dist/main.js --name nestsx
 ```
 
 ### Deployment Checklist

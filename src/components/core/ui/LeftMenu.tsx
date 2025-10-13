@@ -25,10 +25,7 @@ export function LeftMenu({ currentPath }: LeftMenuProps = {}) {
 
           return (
             <li key={item.path}>
-              <a
-                href={item.path}
-                aria-current={isActive ? "page" : undefined}
-              >
+              <a href={item.path} aria-current={isActive ? "page" : undefined}>
                 {item.icon} {item.label}
               </a>
             </li>

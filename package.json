@@ -1,5 +1,5 @@
 {
-  "name": "monobackend",
+  "name": "nestsx",
   "version": "1.0.0",
   "description": "",
   "main": "dist/main.js",
@@ -7,7 +7,6 @@
     "build": "nest build --webpack --webpackPath webpack-hmr.config.js",
     "build:prod": "webpack --mode production",
     "build:nest": "nest build",
-    "format": "prettier --write \"src/**/*.ts\"",
     "start": "node dist/main.js",
     "start:dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "start:webpack": "webpack --mode development --watch",
@@ -52,8 +51,10 @@
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.44.1",
     "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-testing-library": "^7.9.2",
@@ -69,6 +70,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.46.0",
     "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"

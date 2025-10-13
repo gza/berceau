@@ -10,9 +10,7 @@ export function AppLayout({ children, currentPath }: AppLayoutProps) {
   return (
     <div>
       <LeftMenu currentPath={currentPath} />
-      <main>
-        {children}
-      </main>
+      <main>{children}</main>
     </div>
   )
 }

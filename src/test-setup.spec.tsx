@@ -4,9 +4,9 @@ import { render, screen } from "@testing-library/react"
 describe("Jest Setup Test", () => {
   it("should work with basic React rendering", () => {
     const TestComponent = () => <div>Hello Test</div>
-    
+
     render(<TestComponent />)
-    
+
     expect(screen.getByText("Hello Test")).toBeInTheDocument()
   })
 })

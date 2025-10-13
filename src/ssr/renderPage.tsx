@@ -9,13 +9,14 @@ export interface RenderPageOptions {
   currentPath?: string
 }
 
-export function renderPage(content: ReactElement, options: RenderPageOptions = {}) {
+export function renderPage(
+  content: ReactElement,
+  options: RenderPageOptions = {},
+) {
   const { title, scripts, currentPath } = options
   const view = renderToString(
     <HtmlDocument title={title} scripts={scripts}>
-      <AppLayout currentPath={currentPath}>
-        {content}
-      </AppLayout>
+      <AppLayout currentPath={currentPath}>{content}</AppLayout>
     </HtmlDocument>,
   )
 

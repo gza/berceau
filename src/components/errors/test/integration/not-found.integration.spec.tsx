@@ -13,6 +13,8 @@ describe("404 Page Integration", () => {
     render(<NotFoundPage />)
 
     // Expect the back link to be rendered
-    expect(screen.getByRole("link", { name: /go back to the welcome page/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: /go back to the welcome page/i }),
+    ).toBeInTheDocument()
   })
 })

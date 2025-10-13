@@ -31,11 +31,10 @@ async function bootstrap() {
   // Hot Module Replacement
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (module.hot) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     module.hot.accept()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     module.hot.dispose(() => app.close())
   }
 }
