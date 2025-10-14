@@ -14,7 +14,18 @@ NesTsx provides ~~a production-ready~~ an ⚠️ experimental ⚠️ foundation 
 - **Asset Management**: Webpack-powered asset handling with hot module replacement
 - **Testing**: Comprehensive test coverage with Jest
 
-This boilerplate eliminates the complexity of setting up SSR with NestJS, providing a clean, maintainable architecture out of the box.
+## Future plans
+
+We at WEBGR will continue to explore and try to use it as a base for new internal projects.
+
+We plan to add more features and improvements over time, including:
+- Database integration (Prisma)
+- Authentication & Authorization (JWT, OAuth)
+- Ready to consume UI components (forms, buttons, tables...)
+- HTMX support
+- Internationalization (i18n)
+- Plugin based structure (so anybody can create its app with plugins and use ones from others)
+- CI/CD integration
 
 ## ✨ Key Orientations
 
@@ -25,6 +36,7 @@ This boilerplate eliminates the complexity of setting up SSR with NestJS, provid
 - **🏗️ Domain-Driven Structure**: Organized by feature domains, not technical layers
 - **🎨 CSS Management**: Global and page-specific CSS with proper scoping
 - **📘 Type Safety**: Full TypeScript support with strict mode enabled
+- **🤖 AI assisted coding**: Try to optimize your code with AI tools (currently GitHub Copilot & specKit)
 
 ## 🚦 Quick Start
 
@@ -77,19 +89,9 @@ Comprehensive documentation is available in the `docs/` directory:
 
 ### Architecture & Design
 - **[General Architecture](docs/GENERAL_ARCHITECTURE.md)** - Overview of the project structure and design decisions
-- **[Domain-Driven Structure](docs/DOMAIN_DRIVEN_STRUCTURE.md)** - Organizing code by business domains
-
-### Development Guides
 - **[Hot Reload Implementation](docs/HOT_RELOAD_IMPLEMENTATION.md)** - Webpack HMR setup and configuration
-- **[Assets Guide](docs/ASSETS_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
-- **[Assets Quick Reference](docs/ASSETS_QUICK_REFERENCE.md)** - Quick reference for asset imports
-
-### Testing
-- **[Testing Strategy](docs/TESTING_STRATEGY.md)** - Approach to testing SSR applications
-- **[Test Setup Guide](docs/TEST_SETUP_GUIDE.md)** - Configuring Jest for SSR components
-
-### API & Integration
-- **[SSR API](docs/SSR_API.md)** - Server-side rendering API documentation
+- **[UI Assets Management Guide](docs/UI_ASSETS_MANAGEMENT_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
+- **[UI Assets Management Implementation](docs/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)** - Technical implementation details (webpack, serving)
 
 ## 🛠️ Available Scripts
 
@@ -98,7 +100,6 @@ Comprehensive documentation is available in the `docs/` directory:
 | `npm run start:dev` | Start development server with HMR |
 | `npm run build` | Build for production |
 | `npm run test` | Run all tests |
-| `npm run test:watch` | Run tests in watch mode |
 | `npm run lint` | Lint (fix) code with ESLint + prettier |
 
 ## 🏗️ Technology Stack
@@ -109,58 +110,45 @@ Comprehensive documentation is available in the `docs/` directory:
 - **Testing**: [Jest](https://jestjs.io/)
 - **SSR**: TSX Server-Side Rendering with react's `renderToString` + Webpack
 
-## 🎨 Asset Management
+## 🚀 Development experience
 
-NesTsx includes a simple asset management system:
+```ts
+// src/components/about/about.controller.ts
+import { Controller, Get } from "@nestjs/common"
+import { createElement } from "react"
+import { renderPage } from "../../ssr/renderPage"
+import { AboutPage } from "./ui/AboutPage"
 
-- **CSS Files**: Global and page-specific stylesheets with proper scoping
-- **Images**: SVG, PNG, JPG, WebP with automatic optimization
-- **Type Safety**: TypeScript definitions for all asset imports
-- **Hot Reload**: Asset changes trigger fast rebuilds
-
-Example:
-```tsx
-import logo from "./logo.svg"
-import styles from "./page.css"
-
-export function MyComponent() {
-  return (
-    <div>
-      <link rel="stylesheet" href={styles} />
-      <img src={logo} alt="Logo" />
-    </div>
-  )
+@Controller()
+export class AboutController {
+  @Get("/about")
+  getAbout(): string {
+    return renderPage(createElement(AboutPage), {
+      title: "About",
+      currentPath: "/about",
+    })
+  }
 }
 ```
 
-See the [Assets Guide](docs/ASSETS_GUIDE.md) for complete documentation.
+```tsx
+// src/components/about/ui/AboutPage.tsx
+import styles from "./about-page.css"
 
-## 🧪 Testing
+export function AboutPage() {
+  return (
+    <div className="about-page">
+      <link rel="stylesheet" href={styles} />
+      <h1>About Us</h1>
+      <p>
+        The NesTsx project demonstrates a modern web application architecture
+        that combines the power of NestJS and React within a single codebase.
+      </p>
+    </div>
+  )
+}
 
-The project includes comprehensive testing setup:
-
-- **Component Tests**: React component unit tests
-- **Integration Tests**: Full page rendering tests
-- **Contract Tests**: API endpoint validation
-- **SSR Tests**: Server-side rendering verification
-
-Tests are organized by domain and separated into `node-tests` (server) and `react-tests` (components).
-
-## 📝 Code Style
-
-The project follows strict TypeScript and ESLint rules:
-
-- Strict TypeScript mode enabled
-- ESLint with recommended rules
-- Component-level type definitions
-- Proper error handling
-
-## 🤝 Contributing
-
-1. Follow the existing project structure
-2. Write tests for new features
-3. Update documentation as needed
-4. Run `npm run lint` and `npm run test` before committing
+```
 
 ## 📄 License
 
@@ -175,6 +163,6 @@ This boilerplate demonstrates best practices for:
 - Modern asset management with webpack
 - Comprehensive testing strategies
 
----
+## Contribution
 
-**Ready to build something amazing?** Check out the [General Architecture](docs/GENERAL_ARCHITECTURE.md) documentation to get started!
+Contributions & ideas are welcome! Please open issues or pull requests.
