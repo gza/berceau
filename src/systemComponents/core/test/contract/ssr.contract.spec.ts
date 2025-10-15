@@ -34,7 +34,7 @@ describe("PagesController Contract", () => {
     expect(response.text).toContain("</html>")
 
     // The response should contain the SSR-rendered React application
-    expect(response.text).toContain("Welcome to the NesTsx")
+    expect(response.text).toContain("Welcome to the Berceau")
     expect(response.text).toContain("Navigation")
     expect(response.text).toContain('aria-current="page"')
   })

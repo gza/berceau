@@ -6,7 +6,7 @@ export function AboutPage() {
       <link rel="stylesheet" href={styles} />
       <h1>About Us</h1>
       <p>
-        The NesTsx project demonstrates a modern web application architecture
+        The Berceau project demonstrates a modern web application architecture
         that combines the power of NestJS and React within a single codebase.
       </p>
       <h2>Technology Stack</h2>

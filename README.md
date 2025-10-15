@@ -1,4 +1,4 @@
-# NesTsx
+# Berceau
 
 A modern, typesafe boilerplate for building full-stack web applications with **NestJS** and **TSX Server-Side Rendering (SSR)**.
 
@@ -6,7 +6,7 @@ pronouce "Nes-T-S-X"
 
 ## 🎯 Project Goal
 
-NesTsx provides ~~a production-ready~~ an ⚠️ experimental ⚠️ foundation for building web applications that combine:
+Berceau provides ~~a production-ready~~ an ⚠️ experimental ⚠️ foundation for building web applications that combine:
 
 - **Backend**: NestJS framework with TypeScript for robust and full featured server architecture
 - **Frontend**: TSX components with server-side rendering for simplicity and typesafe robustness
@@ -141,7 +141,7 @@ export function AboutPage() {
       <link rel="stylesheet" href={styles} />
       <h1>About Us</h1>
       <p>
-        The NesTsx project demonstrates a modern web application architecture
+        The Berceau project demonstrates a modern web application architecture
         that combines the power of NestJS and React within a single codebase.
       </p>
     </div>

@@ -2,12 +2,12 @@ import { render, screen } from "@testing-library/react"
 import { WelcomePage } from "../../ui/WelcomePage"
 
 describe("Welcome Page Integration", () => {
-  it('should render the "Welcome to the NesTsx" heading', () => {
+  it('should render the "Welcome to the Berceau" heading', () => {
     render(<WelcomePage />)
 
     // Expect the Welcome heading to be rendered
     expect(
-      screen.getByRole("heading", { name: /welcome to the nestsx/i }),
+      screen.getByRole("heading", { name: /welcome to the berceau/i }),
     ).toBeInTheDocument()
   })
 

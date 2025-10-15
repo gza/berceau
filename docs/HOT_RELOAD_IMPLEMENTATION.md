@@ -245,7 +245,7 @@ npm run start:webpack
 
 ### Test 1: Change Component Text
 1. Edit `src/systemComponents/welcome/ui/WelcomePage.tsx`
-2. Change "Welcome to the NesTsx" → "Welcome to HMR!"
+2. Change "Welcome to the Berceau" → "Welcome to HMR!"
 3. Save file
 4. **Result:** Page updates in ~500ms
 

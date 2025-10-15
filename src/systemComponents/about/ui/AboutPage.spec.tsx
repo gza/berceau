@@ -14,7 +14,7 @@ describe("AboutPage Component", () => {
     render(<AboutPage />)
 
     expect(
-      screen.getByText(/the nestsx project demonstrates/i),
+      screen.getByText(/the berceau project demonstrates/i),
     ).toBeInTheDocument()
     expect(
       screen.getByText(/modern web application architecture/i),

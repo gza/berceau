@@ -6,7 +6,7 @@ describe("WelcomePage Component", () => {
     render(<WelcomePage />)
 
     expect(
-      screen.getByRole("heading", { name: /welcome to the nestsx/i }),
+      screen.getByRole("heading", { name: /welcome to the berceau/i }),
     ).toBeInTheDocument()
   })
 

@@ -8,7 +8,7 @@ describe("renderPage", () => {
     expect(view).toContain("<!DOCTYPE html>")
     expect(view).toContain("<html")
     expect(view).toContain("Custom Title")
-    expect(view).toContain("Welcome to the NesTsx")
+    expect(view).toContain("Welcome to the Berceau")
     expect(view).not.toContain("<script")
   })
 

@@ -12,9 +12,9 @@ export function WelcomePage(_props: Props) {
     <div className="welcome-page">
       <link rel="stylesheet" href={styles} />
       <img src={welcomeSvg} alt="Welcome" />
-      <h1>Welcome to the NesTsx on {currentDate}</h1>
+      <h1>Welcome to the Berceau on {currentDate}</h1>
       <p>
-        This is the main welcome page of the NesTsx application. The application
+        This is the main welcome page of the Berceau application. The application
         features a unified architecture with server-side rendering capabilities,
         combining NestJS on the backend with React on the frontend.
       </p>

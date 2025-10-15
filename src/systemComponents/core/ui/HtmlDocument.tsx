@@ -9,7 +9,7 @@ export interface HtmlDocumentProps {
 
 export function HtmlDocument({
   children,
-  title = "NesTsx",
+  title = "Berceau",
   scripts = [],
 }: HtmlDocumentProps) {
   return (

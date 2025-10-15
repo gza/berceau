@@ -1,9 +1,9 @@
 # General Architecture — Concise Summary
 
-Project: NesTsx
+Project: Berceau
 Type: NestJS + TSX Server‑Side Rendering (SSR)
 
-This document provides a focused overview of the unique architectural aspects of NesTsx. It intentionally avoids duplicating the Quick Start, scripts, and basic structure already covered in `README.md`, and skips deep HMR/asset specifics documented in `docs/HOT_RELOAD_IMPLEMENTATION.md` and the UI assets docs (`docs/UI_ASSETS_MANAGEMENT_*.md`).
+This document provides a focused overview of the unique architectural aspects of Berceau. It intentionally avoids duplicating the Quick Start, scripts, and basic structure already covered in `README.md`, and skips deep HMR/asset specifics documented in `docs/HOT_RELOAD_IMPLEMENTATION.md` and the UI assets docs (`docs/UI_ASSETS_MANAGEMENT_*.md`).
 
 ## Goals and Core Ideas
 
