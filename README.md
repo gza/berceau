@@ -87,11 +87,15 @@ src/
 
 Comprehensive documentation is available in the `docs/` directory:
 
+### End-developer Guides
+
+- **[UI Assets Management Guide](docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
+- **[Features Discovery Guide](docs/dev_guides/FEATURES_DISCOVERY_GUIDE.md)** - How to use the features discovery system
+
 ### Architecture & Design
-- **[General Architecture](docs/GENERAL_ARCHITECTURE.md)** - Overview of the project structure and design decisions
-- **[Hot Reload Implementation](docs/HOT_RELOAD_IMPLEMENTATION.md)** - Webpack HMR setup and configuration
-- **[UI Assets Management Guide](docs/UI_ASSETS_MANAGEMENT_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
-- **[UI Assets Management Implementation](docs/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)** - Technical implementation details (webpack, serving)
+- **[General Architecture](docs/implementation_doc/GENERAL_ARCHITECTURE.md)** - Overview of the project structure and design decisions
+- **[Hot Reload Implementation](docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md)** - Webpack HMR setup and configuration
+- **[UI Assets Management Implementation](docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)** - Technical implementation details (webpack, serving)
 
 ## 🛠️ Available Scripts
 

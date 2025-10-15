@@ -1,6 +1,6 @@
 # UI Assets Management Implementation — Webpack File Copying
 
-[Looking for usage examples? Read the UI Assets Management Guide.](./UI_ASSETS_MANAGEMENT_GUIDE.md)
+[Looking for usage examples? Read the UI Assets Management Guide.](../dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md)
 
 Audience: maintainers/architects. This document explains how asset imports are implemented and served.
 

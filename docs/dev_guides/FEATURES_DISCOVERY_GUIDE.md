@@ -3,9 +3,9 @@
 **Audience:** Developers adding new features to the application
 
 **Related docs:**
-- [Implementation Details](./FEATURES_DISCOVERY_IMPLEMENTATION.md) - How the discovery system works internally
-- [UI Assets Management Guide](./UI_ASSETS_MANAGEMENT_GUIDE.md) - How to use images, SVG, and CSS in features
-- [Hot Reload Implementation](./HOT_RELOAD_IMPLEMENTATION.md) - How HMR works with feature discovery
+- [Implementation Details](../implementation_doc/FEATURES_DISCOVERY_IMPLEMENTATION.md) - How the discovery system works internally
+- [UI Assets Management Guide](../dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md) - How to use images, SVG, and CSS in features
+- [Hot Reload Implementation](../implementation_doc/HOT_RELOAD_IMPLEMENTATION.md) - How HMR works with feature discovery
 
 ## Overview
 
@@ -172,7 +172,7 @@ export function MyFeaturePage() {
 
 Assets are automatically copied to `dist/assets/components/my-feature/ui/` and served at `/assets/components/my-feature/ui/`.
 
-**See [UI Assets Management Guide](./UI_ASSETS_MANAGEMENT_GUIDE.md) for more details.**
+**See [UI Assets Management Guide](../dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md) for more details.**
 
 ## Multiple Routes
 
@@ -505,4 +505,4 @@ export function DashboardPage() {
 - HMR makes iteration fast
 - No manual registration required
 
-For implementation details, see [FEATURES_DISCOVERY_IMPLEMENTATION.md](./FEATURES_DISCOVERY_IMPLEMENTATION.md).
+For implementation details, see [FEATURES_DISCOVERY_IMPLEMENTATION.md](../implementation_doc/FEATURES_DISCOVERY_IMPLEMENTATION.md).

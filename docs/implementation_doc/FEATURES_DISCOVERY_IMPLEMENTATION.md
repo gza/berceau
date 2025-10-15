@@ -3,7 +3,7 @@
 **Audience:** Maintainers, architects, developers extending the discovery system
 
 **Related docs:**
-- [Features Discovery Guide](./FEATURES_DISCOVERY_GUIDE.md) - How to use the system (for developers adding features)
+- [Features Discovery Guide](../dev_guides/FEATURES_DISCOVERY_GUIDE.md) - How to use the system (for developers adding features)
 - [Hot Reload Implementation](./HOT_RELOAD_IMPLEMENTATION.md) - HMR integration details
 - [UI Assets Management Implementation](./UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md) - Asset handling details
 
@@ -808,4 +808,4 @@ The feature discovery system provides:
 
 The implementation uses standard Webpack plugin patterns and integrates cleanly with NestJS, making it maintainable and extensible.
 
-For usage instructions, see [FEATURES_DISCOVERY_GUIDE.md](./FEATURES_DISCOVERY_GUIDE.md).
+For usage instructions, see [FEATURES_DISCOVERY_GUIDE.md](../dev_guides/FEATURES_DISCOVERY_GUIDE.md).

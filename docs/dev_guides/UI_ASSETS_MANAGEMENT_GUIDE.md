@@ -66,8 +66,8 @@ Tip: In component-scoped features under `src/components/<feature-id>/`, co-locat
 
 ## Learn More
 
-- Implementation details: see [UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md](./UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)
-- HMR specifics: [HOT_RELOAD_IMPLEMENTATION.md](./HOT_RELOAD_IMPLEMENTATION.md)
+- Implementation details: see [UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md](../implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)
+- HMR specifics: [HOT_RELOAD_IMPLEMENTATION.md](../implementation_doc/HOT_RELOAD_IMPLEMENTATION.md)
 
 ## Development
 

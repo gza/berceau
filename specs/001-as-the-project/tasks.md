@@ -196,21 +196,21 @@ Checkpoint: User Story 3 independently testable and complete.
 Purpose: Improvements affecting multiple user stories and documentation updates.
 
 - [X] T024 [P] Documentation updates in `docs/` (usage and internals)
-  - Update `docs/UI_ASSETS_MANAGEMENT_GUIDE.md` with a short section on using assets within component-scoped features (co-location, URLs under `/assets/`); link to example feature.
-  - Update `docs/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md` with a note about how generated routes and SSR still rely on Express static `/assets/` mapping; confirm webpack rules.
+  - Update `docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md` with a short section on using assets within component-scoped features (co-location, URLs under `/assets/`); link to example feature.
+  - Update `docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md` with a note about how generated routes and SSR still rely on Express static `/assets/` mapping; confirm webpack rules.
   
-  - Update `docs/HOT_RELOAD_IMPLEMENTATION.md` to mention that the discovery/codegen plugin surfaces validation errors as webpack compilation errors that block HMR.
+  - Update `docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md` to mention that the discovery/codegen plugin surfaces validation errors as webpack compilation errors that block HMR.
 
 - [X] T025 [P] Developer Guide: How to add a drop-in feature
-  - Add new doc: `docs/FEATURES_DISCOVERY_GUIDE.md` (how to use it — steps from quickstart, required files, metadata schema, troubleshooting)
+  - Add new doc: `docs/dev_guides/FEATURES_DISCOVERY_GUIDE.md` (how to use it — steps from quickstart, required files, metadata schema, troubleshooting)
 
 - [X] T026 [P] Implementation Notes: How discovery works
-  - Add new doc: `docs/FEATURES_DISCOVERY_IMPLEMENTATION.md` (how it works — plugin overview, generation outputs, validation rules, HMR behavior)
+  - Add new doc: `docs/implementation_doc/FEATURES_DISCOVERY_IMPLEMENTATION.md` (how it works — plugin overview, generation outputs, validation rules, HMR behavior)
 
 - [X] T027 Performance check at scale
   - Script or doc note to measure discovery time with 50–100 features; ensure under 3s incremental rebuilds per SC-002.
   - Created `build/performance-test.js` for automated performance testing
-  - Documented results in `docs/PERFORMANCE_TEST_RESULTS.md`
+  - Documented results in `docs/implementation_doc/PERFORMANCE_TEST_RESULTS.md`
   - Results: 103ms for 100 features (96.6% under 3s requirement)
 
 - [X] T028 Code cleanup and comments
