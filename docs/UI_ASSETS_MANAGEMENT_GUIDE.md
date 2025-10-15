@@ -26,6 +26,8 @@ Result:
 - `icon` → `/assets/components/.../icon.svg`
 - `logo` → `/assets/components/.../logo.png`
 
+Tip: In component-scoped features under `src/components/<feature-id>/`, co-locate UI assets (SVG, images, CSS) next to the TSX files. They will be copied to `/assets/components/<feature-id>/...` and URLs will be stable across SSR and client requests.
+
 ## Supported Types
 
 | Type | Extensions | Use |
@@ -78,3 +80,8 @@ Starts the dev server with HMR:
 - TypeScript recompiles TS/TSX
 - Express serves assets at `/assets/`
 - Saving changes triggers fast rebuilds (~500ms)
+
+Working with component-scoped features:
+- Adding/removing assets inside `src/components/<feature-id>/ui/` is detected by Webpack.
+- When paired with the feature discovery step, UI updates and asset changes are hot-reloaded together.
+- Ensure imports are relative to the TSX component so the preserved directory structure remains logical.

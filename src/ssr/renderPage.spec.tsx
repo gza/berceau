@@ -1,5 +1,5 @@
 import { renderPage } from "./renderPage"
-import { WelcomePage } from "../components/welcome/ui/WelcomePage"
+import { WelcomePage } from "../systemComponents/welcome/ui/WelcomePage"
 
 describe("renderPage", () => {
   it("should wrap the provided component in an HTML document", () => {

@@ -1,6 +1,7 @@
 const path = require("path")
 const nodeExternals = require("webpack-node-externals")
 const svgToMiniDataURI = require("mini-svg-data-uri")
+const FeatureDiscoveryPlugin = require("./build/feature-discovery-plugin")
 
 module.exports = {
   entry: "./src/main.ts",
@@ -28,7 +29,7 @@ module.exports = {
         exclude: /node_modules/,
       },
 
-      // SVG files
+      // SVG files (inline as data URIs for SSR)
       {
         test: /\.svg$/,
         type: "asset",
@@ -39,6 +40,36 @@ module.exports = {
               content = content.toString()
             }
             return svgToMiniDataURI(content)
+          },
+        },
+      },
+
+      // CSS files - copy to dist/assets/
+      {
+        test: /\.css$/i,
+        type: "asset/resource",
+        generator: {
+          filename: (pathData) => {
+            const match = pathData.filename.match(/src[/\\](.+)/)
+            const relativePath = match
+              ? match[1]
+              : path.basename(pathData.filename)
+            return `assets/${relativePath}`
+          },
+        },
+      },
+
+      // Image files - copy to dist/assets/
+      {
+        test: /\.(png|jpe?g|gif|webp)$/i,
+        type: "asset/resource",
+        generator: {
+          filename: (pathData) => {
+            const match = pathData.filename.match(/src[/\\](.+)/)
+            const relativePath = match
+              ? match[1]
+              : path.basename(pathData.filename)
+            return `assets/${relativePath}`
           },
         },
       },
@@ -57,6 +88,9 @@ module.exports = {
     // Clean dist folder before each build
     clean: true,
   },
+
+  // Plugins
+  plugins: [new FeatureDiscoveryPlugin({ rootDir: __dirname })],
 
   // Source maps for debugging
   devtool:

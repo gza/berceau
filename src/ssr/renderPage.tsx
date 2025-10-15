@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server"
 import type { ReactElement } from "react"
-import { AppLayout } from "../components/core/ui/AppLayout"
-import { HtmlDocument } from "../components/core/ui/HtmlDocument"
+import { AppLayout } from "../systemComponents/core/ui/AppLayout"
+import { HtmlDocument } from "../systemComponents/core/ui/HtmlDocument"
 
 export interface RenderPageOptions {
   title?: string

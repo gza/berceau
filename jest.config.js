@@ -17,8 +17,10 @@ module.exports = {
       preset: "ts-jest",
       testEnvironment: "node",
       testMatch: [
-        "<rootDir>/src/**/contract/**/*.spec.ts",
+        "<rootDir>/src/**/contract/**/?(*.)+(spec|test).ts",
+        "<rootDir>/src/**/integration/**/?(*.)+(spec|test).ts",
         "<rootDir>/src/**/*.service.spec.ts",
+        "<rootDir>/src/components/**/test/**/?(*.)+(spec|test).ts",
       ],
       transform: {
         "^.+\\.(ts)$": "ts-jest",
@@ -35,7 +37,8 @@ module.exports = {
       testEnvironment: "jsdom",
       testMatch: [
         "<rootDir>/src/**/*.spec.tsx",
-        "<rootDir>/src/**/integration/**/*.spec.tsx",
+        "<rootDir>/src/**/integration/**/?(*.)+(spec|test).tsx",
+        "<rootDir>/src/components/**/test/**/?(*.)+(spec|test).tsx",
       ],
       setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
       transform: {

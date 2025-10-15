@@ -65,8 +65,8 @@ No runtime React on the client by default; navigation is standard links and full
 
 ## Directory Organization Principles
 
-- Feature-first: `src/components/<feature>/` with `ui/`, optional controller(s), and tests nearby.
-- Infrastructure in `src/components/core` and SSR helpers in `src/ssr/`.
+- Feature-first: `src/systemComponents/<feature>/` with `ui/`, optional controller(s), and tests nearby.
+- Infrastructure in `src/systemComponents/core` and SSR helpers in `src/ssr/`.
 - Type declarations in `src/types/` to keep imports type-safe (e.g., `*.svg`).
 - Tests:
   - Unit: `*.spec.tsx` close to components.
@@ -79,9 +79,9 @@ No runtime React on the client by default; navigation is standard links and full
 - `src/app.module.ts`: Aggregates feature modules.
 - `src/entry-server.tsx`: Re-exports `renderPage` as the rendering entry point.
 - `src/ssr/renderPage.tsx`: SSR pipeline building the full document string.
-- `src/components/core/ui/HtmlDocument.tsx`: `<html>`, `<head>`, `<body>` structure.
-- `src/components/core/ui/AppLayout.tsx`: Structural layout and nav region.
-- `src/components/core/ui/LeftMenu.tsx`: Server-rendered navigation links.
+- `src/systemComponents/core/ui/HtmlDocument.tsx`: `<html>`, `<head>`, `<body>` structure.
+- `src/systemComponents/core/ui/AppLayout.tsx`: Structural layout and nav region.
+- `src/systemComponents/core/ui/LeftMenu.tsx`: Server-rendered navigation links.
 
 ## Testing Strategy (Architectural Angle)
 

@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "build": "nest build --webpack --webpackPath webpack-hmr.config.js",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
     "build:prod": "webpack --mode production",
     "build:nest": "nest build",
     "start": "node dist/main.js",

@@ -6,7 +6,7 @@
 /**
  * Get the URL path for a static asset
  * @param assetPath - Path to the asset file from src root
- *   (e.g., 'components/welcome/ui/welcome.svg')
+ *   (e.g., 'systemComponents/welcome/ui/welcome.svg')
  * @returns URL path to access the asset
  */
 export function getAssetUrl(assetPath: string): string {

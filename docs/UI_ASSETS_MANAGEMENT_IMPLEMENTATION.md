@@ -8,7 +8,7 @@ Audience: maintainers/architects. This document explains how asset imports are i
 
 1) Components import assets (TS/TSX).  
 2) Webpack treats these as `asset/resource` and copies files to `dist/assets/` preserving `src/` structure.  
-3) The import resolves to a URL string like `/assets/components/.../file.ext`.  
+3) The import resolves to a URL string like `/assets/systemComponents/.../file.ext`.  
 4) Express serves `dist/assets/` at the `/assets/` URL prefix.  
 5) HMR rebuilds on changes.
 
@@ -16,6 +16,11 @@ Diagram
 ```
 src/* → import file → webpack(asset/resource) → dist/assets/* → Express static(/assets/*)
 ```
+
+When combined with component-scoped features discovery/codegen:
+- Feature routes are generated at build time and pages are SSR-rendered.
+- Imported assets in those pages resolve to `/assets/...` served by Express.
+- No runtime filesystem scanning is used; both route registration and asset URLs are known at build time.
 
 ## Configuration
 
@@ -77,8 +82,10 @@ app.useStaticAssets(join(__dirname, "assets"), {
 ```
 
 **This maps:**
-- File: `dist/assets/components/welcome/ui/welcome.svg`
-- URL: `/assets/components/welcome/ui/welcome.svg`
+- File: `dist/assets/systemComponents/welcome/ui/welcome.svg`
+- URL: `/assets/systemComponents/welcome/ui/welcome.svg`
+
+For component-scoped features under `src/components/<feature-id>/ui/*`, the mapping works the same way and results in URLs like `/assets/components/<feature-id>/ui/icon.svg`.
 
 ### 3. TypeScript Definitions (`src/types/svg.d.ts`)
 
@@ -125,7 +132,7 @@ declare module "*.css" {
 
 ```
 src/
-├── components/
+├── systemComponents/
 │   └── welcome/
 │       └── ui/
 │           ├── welcome.svg        ← Asset file
@@ -142,7 +149,7 @@ src/
 dist/
 ├── main.js                       ← Compiled bundle (contains URL references)
 └── assets/                       ← Copied asset files
-    └── components/
+    └── systemComponents/
         └── welcome/
       └── ui/
         ├── welcome.svg
@@ -184,6 +191,10 @@ dist/
    - URLs resolve correctly in server-rendered HTML
    - No runtime file system access required
 
+7. **Pluggable Feature-Friendly**
+- Assets live alongside each feature folder and are served uniformly via `/assets/`.
+- Generated routes and navigation can reference these URLs without additional configuration.
+
 ### Trade-offs
 
 Compared to **data URI embedding**:
@@ -217,7 +228,7 @@ This will: start webpack in watch mode, copy assets into `dist/assets/`, compile
 
 1. **Place asset file with component:**
    ```
-   src/components/myfeature/ui/
+   src/systemComponents/myfeature/ui/
    ├── icon.svg
    ├── background.jpg
    ├── styles.css
@@ -248,9 +259,9 @@ This will: start webpack in watch mode, copy assets into `dist/assets/`, compile
 
 ## Maintenance Notes
 
-1. **Co-locate assets** - Keep files next to components that use them
+1. **Co-locate assets** - Keep files next to systemComponents that use them
    ```
-   src/components/feature/ui/
+   src/systemComponents/feature/ui/
    ├── component.tsx
    ├── icon.svg
    └── styles.css

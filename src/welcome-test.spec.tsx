@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { WelcomePage } from "./components/welcome/ui/WelcomePage"
+import { WelcomePage } from "./systemComponents/welcome/ui/WelcomePage"
 
 describe("Welcome Page Test", () => {
   it("should render the welcome heading", () => {

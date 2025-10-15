@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { navigation } from "../../../components.generated/features.registry"
 
 interface NavLink {
   label: string
@@ -6,10 +7,14 @@ interface NavLink {
   icon?: ReactNode
 }
 
-const menuItems: NavLink[] = [
+// Core navigation items (system pages)
+const coreMenuItems: NavLink[] = [
   { label: "Welcome", path: "/" },
   { label: "About", path: "/about" },
 ]
+
+// Combine core navigation with dynamically discovered feature navigation
+const menuItems: NavLink[] = [...coreMenuItems, ...navigation]
 
 export interface LeftMenuProps {
   currentPath?: string

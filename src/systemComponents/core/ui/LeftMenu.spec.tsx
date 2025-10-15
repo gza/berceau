@@ -38,7 +38,12 @@ describe("LeftMenu Component", () => {
     expect(list).toBeInTheDocument()
 
     const listItems = screen.getAllByRole("listitem")
-    expect(listItems).toHaveLength(2)
+    // Should include core items (Welcome, About) + discovered features (Demo)
+    expect(listItems.length).toBeGreaterThanOrEqual(2)
+
+    // Verify core navigation items are always present
+    expect(screen.getByRole("link", { name: /welcome/i })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /about/i })).toBeInTheDocument()
   })
 
   it("should mark the active link when currentPath is provided", () => {

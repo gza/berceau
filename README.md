@@ -67,16 +67,16 @@ The application will be available at `http://localhost:3000`
 
 ```
 src/
-├── components/           # Feature-based components
+├── systemComponents/           # Feature-based systemComponents
 │   ├── about/           # About page feature
 │   │   ├── about.controller.ts
 │   │   ├── about.module.ts
-│   │   └── ui/          # TSX components
+│   │   └── ui/          # TSX systemComponents
 │   ├── core/            # Core layout and routing
-│   │   ├── ui/          # Layout components & global CSS
+│   │   ├── ui/          # Layout systemComponents & global CSS
 │   │   └── test/        # Core functionality tests
 │   ├── welcome/         # Welcome page feature
-│   │   └── ui/          # Page components & assets
+│   │   └── ui/          # Page systemComponents & assets
 │   └── errors/          # Error handling (404, etc.)
 ├── ssr/                 # Server-side rendering utilities
 ├── types/               # TypeScript type definitions

@@ -54,6 +54,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      - [P] markers for parallelizable tasks within each story
      - Checkpoint markers after each story phase
    - Final Phase: Polish & cross-cutting concerns
+     - Update documentation
    - Numbered tasks (T001, T002...) in execution order
    - Clear file paths for each task
    - Dependencies section showing story completion order

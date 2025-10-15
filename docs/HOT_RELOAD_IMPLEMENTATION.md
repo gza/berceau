@@ -53,6 +53,36 @@ module.exports = function (options, webpack) {
 - Keeps SVG handling
 - Minimal configuration
 
+### 2a. Feature Discovery/Codegen Integration with HMR
+
+The feature discovery plugin (see `build/feature-discovery-plugin.js`) runs during Webpack compilation:
+
+**Discovery Process:**
+- Scans `src/components/**/feature.meta.ts` and related modules
+- Loads metadata and validates against schema
+- Generates `src/components.generated/*` files:
+  - `features.registry.ts` - Typed registry of all discovered features
+  - `generated-features.module.ts` - NestJS DynamicModule that imports all feature modules
+
+**Validation & Error Surfacing:**
+- The plugin performs strict validation on all feature metadata
+- Validation checks include:
+  - Unique feature IDs
+  - Unique route paths across all features
+  - Required fields (id, routes)
+  - Exactly one or zero primary route per feature
+  - Features with navigation (`nav`) **must** have a primary route (error, not warning)
+- **Validation errors BLOCK HMR updates** until fixed
+  - Errors are surfaced as Webpack compilation errors with file/field references
+  - HMR will not apply partial updates when validation fails
+  - This guarantees safe hot updates and prevents partially broken state
+  - Terminal shows clear error messages with actionable fix hints
+
+**Context Invalidation:**
+- Changes to `feature.meta.ts`, `feature.module.ts`, or adding/removing feature folders trigger discovery
+- The plugin uses Webpack context dependencies to watch for these changes
+- Generated files are automatically recreated on each build
+
 ### 2. Updated `src/main.ts`
 ```typescript
 // Added HMR support
@@ -75,11 +105,15 @@ async function bootstrap() {
 ```json
 {
   "scripts": {
-    "build": "nest build --webpack --webpackPath webpack-hmr.config.js",
+    "build": "webpack --mode production",
     "start:dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch"
   }
 }
 ```
+
+**Key differences:**
+- `build` - Production build using `webpack.config.js` (includes feature discovery plugin)
+- `start:dev` - Development with HMR using `webpack-hmr.config.js` (includes feature discovery + HMR)
 
 **Scripts Preserved:**
 - `start:webpack` - Direct webpack (without CLI)
@@ -145,6 +179,13 @@ async function bootstrap() {
    NestJS bootstraps → New app instance ready
    ```
 
+5. **Feature Discovery & Validation** (when components change)
+  ```
+  Add/modify src/components/<feature>/* → Discovery runs →
+  - Valid metadata → registry/module re-generated → HMR applies
+  - Invalid metadata (e.g., duplicate route) → Webpack error → HMR blocked until fixed
+  ```
+
 ## Usage
 
 ### Development (with Hot Reload)
@@ -156,6 +197,7 @@ npm run start:dev
 - 🔄 **Auto-restart** on code changes
 - 🎯 **Watches** TypeScript, TSX, and SVG files
 - 📊 **Live feedback** in terminal
+- 🧭 **Feature discovery-aware**: Adding/removing `src/components/<feature>/` triggers discovery, validation, and registry generation
 
 ### Production Build
 ```bash
@@ -202,13 +244,13 @@ npm run start:webpack
 ## Testing Hot Reload
 
 ### Test 1: Change Component Text
-1. Edit `src/components/welcome/ui/WelcomePage.tsx`
+1. Edit `src/systemComponents/welcome/ui/WelcomePage.tsx`
 2. Change "Welcome to the NesTsx" → "Welcome to HMR!"
 3. Save file
 4. **Result:** Page updates in ~500ms
 
 ### Test 2: Change Controller
-1. Edit `src/components/core/pages.controller.ts`
+1. Edit `src/systemComponents/core/pages.controller.ts`
 2. Save file
 3. **Result:** Server restarts automatically
 
@@ -241,6 +283,8 @@ if (module.hot) {
   module.hot.dispose(() => app.close())
 }
 ```
+
+Also check discovery/codegen validation: if you added a new component-scoped feature and HMR appears stuck, look for Webpack compilation errors indicating invalid metadata (e.g., duplicate route path). Fix the metadata and save to resume hot updates.
 
 ### Issue: Webpack Version Conflict
 The config uses `webpack` parameter from NestJS CLI:

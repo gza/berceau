@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Generated code
+src/components.generated/
+
+# Test coverage
+coverage/
+
+# Configuration files
+*.config.js
+webpack*.js

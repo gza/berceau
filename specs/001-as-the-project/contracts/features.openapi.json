@@ -1,0 +1,30 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Feature Routes",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/{featureRoute}": {
+      "get": {
+        "summary": "SSR page route for a feature",
+        "parameters": [
+          {
+            "name": "featureRoute",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HTML page",
+            "content": {
+              "text/html": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}
