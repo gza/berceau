@@ -10,7 +10,7 @@ describe("Feature Validation: Error Surfacing", () => {
     // Errors are logged as: [FeatureDiscovery] ERROR: <message>
     // Warnings are logged as: [FeatureDiscovery] WARNING: <message>
     // Helps developers see issues in the terminal immediately
-    
+
     expect(true).toBe(true)
   })
 
@@ -18,7 +18,7 @@ describe("Feature Validation: Error Surfacing", () => {
     // Plugin calls callback(new Error(...)) on validation failure
     // This causes webpack to fail with non-zero exit code
     // CI/CD pipelines will catch the build failure
-    
+
     expect(true).toBe(true)
   })
 
@@ -26,7 +26,7 @@ describe("Feature Validation: Error Surfacing", () => {
     // Errors: severity === 'error' → block build
     // Warnings: severity === 'warning' → log but allow build
     // Example warning: "Feature has 'nav' but no primary route (will use first route)"
-    
+
     expect(true).toBe(true)
   })
 
@@ -34,7 +34,7 @@ describe("Feature Validation: Error Surfacing", () => {
     // Multiple errors are joined with newlines
     // Format: "Feature validation failed:\n<error1>\n<error2>\n..."
     // Developers see all issues at once, not just the first one
-    
+
     expect(true).toBe(true)
   })
 })
@@ -44,7 +44,7 @@ describe("Feature Validation: Error Message Format", () => {
     // Every error references the feature by ID
     // Example: "Feature 'demo' is missing required 'title' field"
     // Helps identify which feature has the problem
-    
+
     expect(true).toBe(true)
   })
 
@@ -52,7 +52,7 @@ describe("Feature Validation: Error Message Format", () => {
     // Error objects have filePath property
     // Points to feature.meta.ts file
     // IDEs can parse this for quick navigation
-    
+
     expect(true).toBe(true)
   })
 
@@ -60,7 +60,7 @@ describe("Feature Validation: Error Message Format", () => {
     // Error objects have field property
     // Examples: 'id', 'routes', 'routes[].path', 'nav.label'
     // Pinpoints exact location of the problem
-    
+
     expect(true).toBe(true)
   })
 
@@ -68,7 +68,7 @@ describe("Feature Validation: Error Message Format", () => {
     // Messages explain what's wrong and what's expected
     // Bad: "Validation failed"
     // Good: "Feature 'demo' has 2 primary routes, but only one is allowed"
-    
+
     expect(true).toBe(true)
   })
 })
@@ -78,7 +78,7 @@ describe("Feature Validation: HMR Integration", () => {
     // Validation errors prevent webpack from completing compilation
     // HMR can't apply updates until errors are fixed
     // Prevents broken code from reaching the running application
-    
+
     expect(true).toBe(true)
   })
 
@@ -86,7 +86,7 @@ describe("Feature Validation: HMR Integration", () => {
     // Warnings don't block compilation
     // HMR applies updates normally
     // Developers are informed but not blocked
-    
+
     expect(true).toBe(true)
   })
 
@@ -94,7 +94,7 @@ describe("Feature Validation: HMR Integration", () => {
     // Plugin runs on every beforeCompile hook
     // File changes trigger revalidation
     // Ensures issues are caught immediately during development
-    
+
     expect(true).toBe(true)
   })
 })
@@ -104,7 +104,7 @@ describe("Feature Validation: CI/CD Integration", () => {
     // Webpack exits with code 1 when compilation fails
     // CI/CD pipelines detect failure and stop deployment
     // Prevents invalid configurations from reaching production
-    
+
     expect(true).toBe(true)
   })
 
@@ -112,7 +112,7 @@ describe("Feature Validation: CI/CD Integration", () => {
     // All errors are collected and reported together
     // Developers can fix multiple issues in one pass
     // Reduces iteration time in CI/CD
-    
+
     expect(true).toBe(true)
   })
 
@@ -120,7 +120,7 @@ describe("Feature Validation: CI/CD Integration", () => {
     // Clean builds pass validation
     // Webpack exits successfully
     // CI/CD proceeds to next step
-    
+
     expect(true).toBe(true)
   })
 })

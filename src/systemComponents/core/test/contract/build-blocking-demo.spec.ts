@@ -13,7 +13,7 @@ describe("Build Blocking: Severity Levels", () => {
     // 4. Webpack compilation fails with exit code 1
     // 5. HMR is blocked until errors are fixed
     // 6. CI/CD fails and doesn't deploy
-    
+
     expect(true).toBe(true)
   })
 
@@ -26,7 +26,7 @@ describe("Build Blocking: Severity Levels", () => {
     // 5. Webpack compilation succeeds with exit code 0
     // 6. HMR applies updates normally
     // 7. CI/CD proceeds to deployment
-    
+
     expect(true).toBe(true)
   })
 
@@ -37,7 +37,7 @@ describe("Build Blocking: Severity Levels", () => {
     // - Console: ⚠️ WARNING: Feature 'demo' has 'nav' but no primary route
     // - Behavior: Uses first route as fallback
     // - Rationale: This is a valid configuration, just potentially unclear
-    
+
     expect(true).toBe(true)
   })
 
@@ -48,7 +48,7 @@ describe("Build Blocking: Severity Levels", () => {
     // - Console: ❌ ERROR: Feature 'demo' has 'nav' but no primary route
     // - Behavior: Build stops, developer must fix before continuing
     // - Rationale: Forces explicit primary route declaration
-    
+
     expect(true).toBe(true)
   })
 })
@@ -60,13 +60,13 @@ describe("Build Blocking: Configuration Philosophy", () => {
     // - Will cause runtime issues
     // - Violates architectural constraints (duplicate IDs, routes)
     // - Required fields are missing
-    
+
     // Use WARNING when:
     // - Configuration is valid but potentially unclear
     // - System has a sensible fallback behavior
     // - Developer should be informed but not blocked
     // - Best practice recommendation (not requirement)
-    
+
     expect(true).toBe(true)
   })
 
@@ -76,12 +76,12 @@ describe("Build Blocking: Configuration Philosophy", () => {
     // ✅ Predictable: Behavior is documented and tested
     // ✅ Flexible: Allows simple single-route features
     // ⚠️ Informative: Developer is warned about implicit behavior
-    
+
     // Could be changed to ERROR if:
     // ❌ Team wants to enforce explicit primary declarations
     // ❌ Implicit behavior causes confusion in practice
     // ❌ Code review standards require isPrimary
-    
+
     expect(true).toBe(true)
   })
 })
@@ -92,21 +92,21 @@ describe("Build Blocking: How to Change Severity", () => {
     // Method: validateFeatures()
     // Section: "Validate nav configuration if present"
     // Line: ~254 (look for "severity: 'warning'")
-    
+
     // Change from:
     //   severity: 'warning',
-    
+
     // To:
     //   severity: 'error',
-    
+
     // Then rebuild and the validation will block builds
-    
+
     expect(true).toBe(true)
   })
 
   it("shows example of strict validation", () => {
     // If you want STRICT mode (all nav must have explicit primary):
-    
+
     const strictValidation = {
       featureId: "demo",
       severity: "error", // ← Changed from 'warning'
@@ -115,7 +115,7 @@ describe("Build Blocking: How to Change Severity", () => {
       filePath: "/path/to/feature.meta.ts",
       field: "routes[].isPrimary",
     }
-    
+
     expect(strictValidation.severity).toBe("error")
   })
 })

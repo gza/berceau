@@ -16,17 +16,17 @@ describe("Feature Validation: Duplicate Route Paths", () => {
     // The validation should catch duplicate paths like:
     // Feature 'demo' with route '/demo'
     // Feature 'another' with route '/demo'
-    
+
     // Expected error format:
     // "Duplicate route path '/demo' found in features 'demo' and 'another'"
-    
+
     expect(true).toBe(true) // Placeholder - actual validation tested via build
   })
 
   it("should allow different features to have different route paths", () => {
     // Verify that features with unique paths don't trigger validation errors
     // Feature 'demo' with '/demo' and Feature 'example' with '/example' should be valid
-    
+
     expect(true).toBe(true)
   })
 
@@ -36,7 +36,7 @@ describe("Feature Validation: Duplicate Route Paths", () => {
     // - The duplicate route path
     // - File paths to feature.meta.ts files
     // - Field reference (routes[].path)
-    
+
     expect(true).toBe(true)
   })
 })
@@ -46,7 +46,7 @@ describe("Feature Validation: Build-Time Checks", () => {
     // The plugin pushes errors to compilation.errors
     // This causes webpack to fail with non-zero exit code
     // HMR updates are blocked until errors are fixed
-    
+
     expect(true).toBe(true)
   })
 
@@ -56,7 +56,7 @@ describe("Feature Validation: Build-Time Checks", () => {
     // - Exact file path where the error occurred
     // - Specific field that needs to be fixed
     // - Guidance on how to resolve the issue
-    
+
     expect(true).toBe(true)
   })
 })

@@ -10,7 +10,7 @@ describe("Feature Validation: Missing Required Fields", () => {
     // Required field: id
     // Expected error: "Feature at <path> is missing required 'id' field"
     // Should include file path and field name
-    
+
     expect(true).toBe(true)
   })
 
@@ -18,7 +18,7 @@ describe("Feature Validation: Missing Required Fields", () => {
     // Required field: title
     // Expected error: "Feature '<id>' is missing required 'title' field"
     // Should reference the feature ID for context
-    
+
     expect(true).toBe(true)
   })
 
@@ -26,7 +26,7 @@ describe("Feature Validation: Missing Required Fields", () => {
     // Required field: routes (must be non-empty array)
     // Expected error: "Feature '<id>' must have at least one route"
     // Should guide developer to add routes
-    
+
     expect(true).toBe(true)
   })
 
@@ -34,7 +34,7 @@ describe("Feature Validation: Missing Required Fields", () => {
     // Required field: routes[].path
     // Expected error: "Feature '<id>' has a route missing 'path' field"
     // Should help identify which route is problematic
-    
+
     expect(true).toBe(true)
   })
 
@@ -42,7 +42,7 @@ describe("Feature Validation: Missing Required Fields", () => {
     // Required field: routes[].title
     // Expected error: "Feature '<id>' route '<path>' is missing 'title' field"
     // Should include the route path for context
-    
+
     expect(true).toBe(true)
   })
 
@@ -50,7 +50,7 @@ describe("Feature Validation: Missing Required Fields", () => {
     // If nav is defined, nav.label is required
     // Expected error: "Feature '<id>' has 'nav' but is missing 'nav.label'"
     // Should guide developer to either remove nav or add label
-    
+
     expect(true).toBe(true)
   })
 })
@@ -60,7 +60,7 @@ describe("Feature Validation: Error Message Quality", () => {
     // Every error should reference feature.meta.ts file path
     // Format: path.join(feature.folderPath, 'feature.meta.ts')
     // Helps developers quickly locate and fix issues
-    
+
     expect(true).toBe(true)
   })
 
@@ -68,7 +68,7 @@ describe("Feature Validation: Error Message Quality", () => {
     // Every error should specify the exact field with the problem
     // Examples: 'id', 'routes', 'routes[].path', 'nav.label'
     // Helps developers understand what needs to be fixed
-    
+
     expect(true).toBe(true)
   })
 
@@ -76,7 +76,7 @@ describe("Feature Validation: Error Message Quality", () => {
     // Error messages should be actionable
     // Bad: "Invalid metadata"
     // Good: "Feature 'demo' is missing required 'title' field"
-    
+
     expect(true).toBe(true)
   })
 })
@@ -85,21 +85,21 @@ describe("Feature Validation: Optional Fields", () => {
   it("should allow features without nav configuration", () => {
     // nav is optional - features without it should validate successfully
     // They just won't appear in the navigation menu
-    
+
     expect(true).toBe(true)
   })
 
   it("should allow routes without isPrimary flag", () => {
     // isPrimary is optional - defaults to false
     // If no route is primary, first route is used for nav
-    
+
     expect(true).toBe(true)
   })
 
   it("should allow nav.order to be undefined", () => {
     // nav.order is optional
     // Features without order are sorted after those with order
-    
+
     expect(true).toBe(true)
   })
 })

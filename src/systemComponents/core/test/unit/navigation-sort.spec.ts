@@ -30,9 +30,7 @@ describe("Navigation Sort Stability", () => {
 
         // Same order (or both undefined): should be sorted by label
         if (current.order === next.order) {
-          expect(current.label.localeCompare(next.label)).toBeLessThanOrEqual(
-            0,
-          )
+          expect(current.label.localeCompare(next.label)).toBeLessThanOrEqual(0)
         }
 
         // Current has undefined order, next has order: current should come after (fail)
@@ -80,9 +78,7 @@ describe("Navigation Sort Stability", () => {
           const current = entries[i]
           const next = entries[i + 1]
 
-          expect(current.label.localeCompare(next.label)).toBeLessThanOrEqual(
-            0,
-          )
+          expect(current.label.localeCompare(next.label)).toBeLessThanOrEqual(0)
         }
       }
     }
