@@ -1,6 +1,6 @@
 # Berceau
 
-A modern, typesafe boilerplate for building full-stack web applications with **NestJS** and **TSX Server-Side Rendering (SSR)**.
+A modern, typesafe platform, battery included, for building "admin style" web applications with **NestJS** and **TSX Server-Side Rendering (SSR)**.
 
 "Berceau" means "cradle" in French, symbolizing a confortable place for new ideas to grow.
 
@@ -8,11 +8,17 @@ A modern, typesafe boilerplate for building full-stack web applications with **N
 
 Berceau provides ~~a production-ready~~ an ⚠️ experimental ⚠️ foundation for building web applications that combine:
 
-- **Backend**: NestJS framework with TypeScript for robust and full featured server architecture
-- **Frontend**: TSX components with server-side rendering for simplicity and typesafe robustness
-- **Type Safety**: End-to-end TypeScript coverage for both client and server code
-- **Asset Management**: Webpack-powered asset handling with hot module replacement
-- **Testing**: Comprehensive test coverage with Jest
+- **Focus on the Business**: batteries included, sensible defaults, and clear structure
+- **Secure by design**: sensible security defaults and best practices
+- **Server-Side Rendering**: Direct UI to Data wiring with no client-side JS by default
+- **Full TypeScript**: end-to-end type safety from database to UI
+- **Test-Driven Development**: Built-in testing support with Jest and React Testing Library
+- **Fast Development**: Hot Module Replacement (HMR) for rapid feedback loops
+
+## Included Batteries
+
+- **JSX Server-Side Rendering** with React's `renderToString`
+- **pluggable components**: domain-driven structure, each component owns its controllers, UI, and tests
 
 ## Future plans
 
@@ -90,7 +96,7 @@ Comprehensive documentation is available in the `docs/` directory:
 ### End-developer Guides
 
 - **[UI Assets Management Guide](docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
-- **[Features Discovery Guide](docs/dev_guides/FEATURES_DISCOVERY_GUIDE.md)** - How to use the features discovery system
+ - **[Components Discovery Guide](docs/dev_guides/COMPONENTS_DISCOVERY_GUIDE.md)** - How to use the components discovery system
 
 ### Architecture & Design
 - **[General Architecture](docs/implementation_doc/GENERAL_ARCHITECTURE.md)** - Overview of the project structure and design decisions

@@ -88,7 +88,7 @@ describe("Build Blocking: Configuration Philosophy", () => {
 
 describe("Build Blocking: How to Change Severity", () => {
   it("shows location to modify in plugin", () => {
-    // File: build/feature-discovery-plugin.js
+    // File: build/component-discovery-plugin.js
     // Method: validateFeatures()
     // Section: "Validate nav configuration if present"
     // Line: ~254 (look for "severity: 'warning'")

@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common"
 import { AboutModule } from "./systemComponents/about/about.module"
 import { ErrorsModule } from "./systemComponents/errors/errors.module"
 import { CoreModule } from "./systemComponents/core/core.module"
-import { GeneratedFeaturesModule } from "./components.generated/generated-features.module"
+import { GeneratedComponentsModule } from "./components.generated/generated-components.module"
 
 @Module({
   imports: [
@@ -10,7 +10,7 @@ import { GeneratedFeaturesModule } from "./components.generated/generated-featur
     CoreModule,
     AboutModule,
     // Dynamically discovered feature modules
-    GeneratedFeaturesModule,
+    GeneratedComponentsModule,
     // Error handler with wildcard (must be last)
     ErrorsModule,
   ],

@@ -1,15 +1,15 @@
-# Features Discovery Guide - Adding Drop-in Components
+# Components Discovery Guide - Adding Drop-in Components
 
 **Audience:** Developers adding new features to the application
 
 **Related docs:**
-- [Implementation Details](../implementation_doc/FEATURES_DISCOVERY_IMPLEMENTATION.md) - How the discovery system works internally
+- [Implementation Details](../implementation_doc/COMPONENTS_DISCOVERY_IMPLEMENTATION.md) - How the discovery system works internally
 - [UI Assets Management Guide](../dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md) - How to use images, SVG, and CSS in features
-- [Hot Reload Implementation](../implementation_doc/HOT_RELOAD_IMPLEMENTATION.md) - How HMR works with feature discovery
+- [Hot Reload Implementation](../implementation_doc/HOT_RELOAD_IMPLEMENTATION.md) - How HMR works with component discovery
 
 ## Overview
 
-The feature discovery system allows you to add complete, self-contained features by simply creating a folder under `src/components/`. No need to edit files outside your feature folder—the build system automatically discovers, validates, and registers your feature.
+The component discovery system allows you to add complete, self-contained features by simply creating a folder under `src/components/`. No need to edit files outside your feature folder—the build system automatically discovers, validates, and registers your feature.
 
 ### What You Get
 
@@ -30,12 +30,12 @@ mkdir -p src/components/my-feature/ui
 
 ### 2. Add Feature Metadata
 
-Create `src/components/my-feature/feature.meta.ts`:
+Create `src/components/my-feature/component.meta.ts`:
 
 ```typescript
-import type { FeatureMeta } from '../types';
+import type { ComponentMeta } from '../types';
 
-export const featureMeta: FeatureMeta = {
+export const componentMeta: ComponentMeta = {
   id: 'my-feature',
   title: 'My Feature',
   description: 'A great new feature',
@@ -65,11 +65,11 @@ export const featureMeta: FeatureMeta = {
 
 ### 3. Create NestJS Module
 
-Create `src/components/my-feature/feature.module.ts`:
+Create `src/components/my-feature/component.module.ts`:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { MyFeatureController } from './feature.controller';
+import { MyFeatureController } from './component.controller';
 
 @Module({
   controllers: [MyFeatureController],
@@ -79,22 +79,22 @@ export class MyFeatureModule {}
 
 ### 4. Create Controller
 
-Create `src/components/my-feature/feature.controller.ts`:
+Create `src/components/my-feature/component.controller.ts`:
 
 ```typescript
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { renderPage } from '../../ssr/renderPage';
 import { MyFeaturePage } from './ui/MyFeaturePage';
-import { featureMeta } from './feature.meta';
+import { componentMeta } from './component.meta';
 
 @Controller()
 export class MyFeatureController {
-  @Get(featureMeta.routes[0].path)
+  @Get(componentMeta.routes[0].path)
   async myFeature(@Res() res: Response) {
     const html = await renderPage({
       page: MyFeaturePage,
-      props: { title: featureMeta.title },
+      props: { title: componentMeta.title },
     });
     res.status(200).send(html);
   }
@@ -103,7 +103,7 @@ export class MyFeatureController {
 
 **Best practices:**
 - Use `@Controller()` without a path prefix (paths come from metadata)
-- Reference paths from `featureMeta.routes` to keep things DRY
+- Reference paths from `componentMeta.routes` to keep things DRY
 - Use `renderPage()` from `../../ssr/renderPage` for SSR
 
 ### 5. Create UI Component
@@ -135,9 +135,9 @@ Complete feature structure with all optional elements:
 
 ```
 src/components/my-feature/
-├── feature.meta.ts           # Metadata (required)
-├── feature.module.ts          # NestJS module (required)
-├── feature.controller.ts      # NestJS controller (required)
+├── component.meta.ts           # Metadata (required)
+├── component.module.ts          # NestJS module (required)
+├── component.controller.ts      # NestJS controller (required)
 ├── ui/                        # UI components
 │   ├── MyFeaturePage.tsx      # Main page component
 │   ├── MyFeaturePage.spec.tsx # Component tests
@@ -179,7 +179,7 @@ Assets are automatically copied to `dist/assets/components/my-feature/ui/` and s
 Features can have multiple routes. Mark one as primary if you want navigation:
 
 ```typescript
-export const featureMeta: FeatureMeta = {
+export const componentMeta: ComponentMeta = {
   id: 'my-feature',
   title: 'My Feature',
   routes: [
@@ -242,7 +242,7 @@ Create integration tests in `test/integration/`:
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { MyFeatureModule } from '../../feature.module';
+import { MyFeatureModule } from '../../component.module';
 
 describe('MyFeature Integration', () => {
   let app: INestApplication;
@@ -291,10 +291,10 @@ ERROR in Feature 'my-feature' has duplicate route path '/demo' (also used by 'de
 
 **Missing required field:**
 ```
-ERROR in Feature metadata validation failed in src/components/my-feature/feature.meta.ts:
+ERROR in Feature metadata validation failed in src/components/my-feature/component.meta.ts:
 - Missing required field 'id'
 ```
-**Fix:** Add the missing field to your `featureMeta` object.
+**Fix:** Add the missing field to your `componentMeta` object.
 
 **Navigation without primary route:**
 ```
@@ -339,9 +339,9 @@ ERROR in Feature 'my-feature' has multiple routes marked as isPrimary (found 2).
 ### Adding a Feature
 
 1. Create folder structure
-2. Add metadata (`feature.meta.ts`)
-3. Add module (`feature.module.ts`)
-4. Add controller (`feature.controller.ts`)
+2. Add metadata (`component.meta.ts`)
+3. Add module (`component.module.ts`)
+4. Add controller (`component.controller.ts`)
 5. Add UI component (`ui/MyFeaturePage.tsx`)
 6. **Watch terminal for validation errors**
 7. Fix any errors
@@ -404,7 +404,7 @@ ERROR in Feature 'my-feature' has multiple routes marked as isPrimary (found 2).
 If you want a route but no navigation entry, simply omit the `nav` field:
 
 ```typescript
-export const featureMeta: FeatureMeta = {
+export const componentMeta: ComponentMeta = {
   id: 'hidden-feature',
   title: 'Hidden Feature',
   routes: [
@@ -420,7 +420,7 @@ Your feature module can import other modules and use dependency injection normal
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { MyFeatureController } from './feature.controller';
+import { MyFeatureController } from './component.controller';
 import { MyFeatureService } from './feature.service';
 import { DatabaseModule } from '../../database/database.module';
 
@@ -451,8 +451,8 @@ src/components/my-feature/ui/
 ### Minimal Feature (no navigation)
 
 ```typescript
-// feature.meta.ts
-export const featureMeta: FeatureMeta = {
+// component.meta.ts
+export const componentMeta: ComponentMeta = {
   id: 'simple',
   title: 'Simple Feature',
   routes: [{ path: '/simple', title: 'Simple Page' }],
@@ -462,8 +462,8 @@ export const featureMeta: FeatureMeta = {
 ### Feature with Navigation and Assets
 
 ```typescript
-// feature.meta.ts
-export const featureMeta: FeatureMeta = {
+// component.meta.ts
+export const componentMeta: ComponentMeta = {
   id: 'dashboard',
   title: 'Dashboard',
   description: 'User analytics dashboard',
@@ -493,7 +493,7 @@ export function DashboardPage() {
 
 **To add a feature:**
 1. Create folder under `src/components/<feature-id>/`
-2. Add `feature.meta.ts`, `feature.module.ts`, `feature.controller.ts`
+2. Add `component.meta.ts`, `component.module.ts`, `component.controller.ts`
 3. Add UI in `ui/` folder
 4. Run `npm run start:dev`
 5. Your feature is automatically discovered, validated, and registered!
@@ -505,4 +505,4 @@ export function DashboardPage() {
 - HMR makes iteration fast
 - No manual registration required
 
-For implementation details, see [FEATURES_DISCOVERY_IMPLEMENTATION.md](../implementation_doc/FEATURES_DISCOVERY_IMPLEMENTATION.md).
+For implementation details, see [COMPONENTS_DISCOVERY_IMPLEMENTATION.md](../implementation_doc/COMPONENTS_DISCOVERY_IMPLEMENTATION.md).

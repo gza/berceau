@@ -3,7 +3,7 @@
 1) Create a folder:
 - src/components/<feature-id>/
 
-2) Create metadata file `feature.meta.ts`:
+2) Create metadata file `component.meta.ts`:
 ```typescript
 import type { FeatureMeta } from '../types';
 
@@ -19,14 +19,14 @@ export const featureMeta: FeatureMeta = {
 
 3) Add a NestJS module and controller:
 ```typescript
-// feature.module.ts
+// component.module.ts
 import { Module } from '@nestjs/common';
 import { DemoController } from './feature.controller';
 
 @Module({ controllers: [DemoController] })
 export class DemoFeatureModule {}
 
-// feature.controller.ts
+// component.controller.ts
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { renderPage } from '../../ssr/renderPage';

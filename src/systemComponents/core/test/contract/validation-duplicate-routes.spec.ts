@@ -34,7 +34,7 @@ describe("Feature Validation: Duplicate Route Paths", () => {
     // Validation errors should include:
     // - Both feature IDs involved in the conflict
     // - The duplicate route path
-    // - File paths to feature.meta.ts files
+    // - File paths to component.meta.ts files
     // - Field reference (routes[].path)
 
     expect(true).toBe(true)

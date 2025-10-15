@@ -1,7 +1,7 @@
 /**
- * Contract test: Feature route returns HTML as per OpenAPI spec
+ * Contract test: Component route returns HTML as per OpenAPI spec
  *
- * Validates that SSR routes conform to contracts/features.openapi.json
+ * Validates that SSR routes conform to contracts/Components.openapi.json
  */
 
 import { Test, TestingModule } from "@nestjs/testing"
@@ -9,7 +9,7 @@ import { INestApplication } from "@nestjs/common"
 import request from "supertest"
 import { AppModule } from "../../../../app.module"
 
-describe("Feature Route Contract", () => {
+describe("Component Route Contract", () => {
   let app: INestApplication
 
   beforeEach(async () => {
@@ -25,7 +25,7 @@ describe("Feature Route Contract", () => {
     await app.close()
   })
 
-  it("should return text/html for feature routes as per OpenAPI contract", async () => {
+  it("should return text/html", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
     const response = await request(httpServer).get("/demo").expect(200)
 
@@ -38,14 +38,14 @@ describe("Feature Route Contract", () => {
     expect(response.text).toContain("</html>")
   })
 
-  it("should include navigation and layout in feature pages", async () => {
+  it("should include navigation and layout in Component pages", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
     const response = await request(httpServer).get("/demo").expect(200)
 
-    // Feature pages should include the standard layout
+    // Component pages should include the standard layout
     expect(response.text).toContain("Navigation")
 
-    // Feature content should be present
+    // Component content should be present
     expect(response.text).toContain("Demo")
   })
 })

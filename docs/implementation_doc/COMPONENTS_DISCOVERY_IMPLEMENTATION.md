@@ -1,15 +1,15 @@
-# Features Discovery Implementation - How It Works
+# Components Discovery Implementation - How It Works
 
 **Audience:** Maintainers, architects, developers extending the discovery system
 
 **Related docs:**
-- [Features Discovery Guide](../dev_guides/FEATURES_DISCOVERY_GUIDE.md) - How to use the system (for developers adding features)
+- [Components Discovery Guide](../dev_guides/COMPONENTS_DISCOVERY_GUIDE.md) - How to use the system (for developers adding features)
 - [Hot Reload Implementation](./HOT_RELOAD_IMPLEMENTATION.md) - HMR integration details
 - [UI Assets Management Implementation](./UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md) - Asset handling details
 
 ## Overview
 
-The feature discovery system uses a custom Webpack plugin to automatically discover, validate, and register component-scoped features at build time. This document explains the internal architecture and implementation details.
+The component discovery system uses a custom Webpack plugin to automatically discover, validate, and register component-scoped features at build time. This document explains the internal architecture and implementation details.
 
 ## Architecture
 
@@ -18,9 +18,9 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  Developer adds src/components/<feature-id>/                │
-│  - feature.meta.ts                                          │
-│  - feature.module.ts                                        │
-│  - feature.controller.ts                                    │
+│  - component.meta.ts                                          │
+│  - component.module.ts                                        │
+│  - component.controller.ts                                    │
 │  - ui/*.tsx                                                 │
 └────────────────┬────────────────────────────────────────────┘
                  │
@@ -32,7 +32,7 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  FeatureDiscoveryPlugin.apply()                             │
+│  ComponentDiscoveryPlugin.apply()                             │
 │  1. Register with webpack compilation                       │
 │  2. Add context dependencies for watched paths              │
 └────────────────┬────────────────────────────────────────────┘
@@ -40,7 +40,7 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  Plugin discovers features                                  │
-│  - Scan src/components/**/feature.meta.ts                   │
+│  - Scan src/components/**/component.meta.ts                   │
 │  - Load metadata in Node.js context                         │
 │  - Build in-memory feature model                            │
 └────────────────┬────────────────────────────────────────────┘
@@ -74,8 +74,8 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  Plugin generates code                                      │
-│  - src/components.generated/features.registry.ts            │
-│  - src/components.generated/generated-features.module.ts    │
+│  - src/components.generated/components.registry.ts            │
+│  - src/components.generated/generated-components.module.ts    │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
@@ -88,7 +88,7 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  Application starts                                         │
-│  - GeneratedFeaturesModule imported                         │
+│  - GeneratedComponentsModule imported                         │
 │  - All feature modules registered                           │
 │  - Routes available                                         │
 │  - Navigation computed from registry                        │
@@ -100,12 +100,12 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                   Feature Discovery Plugin                   │
-│                (build/feature-discovery-plugin.js)           │
+│                (build/component-discovery-plugin.js)           │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │  discoverFeatures()                                          │
-│  ├─ Scan for feature.meta.ts files                          │
-│  ├─ Check for corresponding feature.module.ts               │
+│  ├─ Scan for component.meta.ts files                          │
+│  ├─ Check for corresponding component.module.ts               │
 │  ├─ Load metadata using dynamic import (Node.js)            │
 │  └─ Build features array                                    │
 │                                                              │
@@ -118,14 +118,14 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
 │  └─ Return validation issues with severity                  │
 │                                                              │
 │  generateRegistry()                                          │
-│  ├─ Generate features.registry.ts                           │
+│  ├─ Generate components.registry.ts                           │
 │  │  ├─ Import and re-export metadata                        │
 │  │  ├─ Build typed features array                           │
 │  │  └─ Build navigation array (sorted)                      │
 │  └─ Return generated code as string                         │
 │                                                              │
 │  generateModule()                                            │
-│  ├─ Generate generated-features.module.ts                   │
+│  ├─ Generate generated-components.module.ts                   │
 │  │  ├─ Import all feature modules                           │
 │  │  └─ Create NestJS DynamicModule                          │
 │  └─ Return generated code as string                         │
@@ -142,14 +142,14 @@ The feature discovery system uses a custom Webpack plugin to automatically disco
 
 ## Implementation Details
 
-### File: `build/feature-discovery-plugin.js`
+### File: `build/component-discovery-plugin.js`
 
 The plugin is a Node.js module that implements the Webpack plugin interface.
 
 #### Class Structure
 
 ```javascript
-class FeatureDiscoveryPlugin {
+class ComponentDiscoveryPlugin {
   constructor(options) {
     this.rootDir = options.rootDir;
     this.componentsDir = path.join(this.rootDir, 'src', 'components');
@@ -169,11 +169,11 @@ class FeatureDiscoveryPlugin {
   }
 
   generateRegistry(features) {
-    // Generate features.registry.ts code
+    // Generate components.registry.ts code
   }
 
   generateModule(features) {
-    // Generate generated-features.module.ts code
+    // Generate generated-components.module.ts code
   }
 }
 ```
@@ -184,7 +184,7 @@ class FeatureDiscoveryPlugin {
 
 ```javascript
 async discoverFeatures() {
-  const pattern = path.join(this.componentsDir, '**', 'feature.meta.ts');
+  const pattern = path.join(this.componentsDir, '**', 'component.meta.ts');
   const metaFiles = glob.sync(pattern, { absolute: true });
   
   const features = [];
@@ -193,15 +193,15 @@ async discoverFeatures() {
     const featureId = path.basename(path.dirname(metaFile));
     
     // Check for corresponding module file
-    const moduleFile = path.join(path.dirname(metaFile), 'feature.module.ts');
+    const moduleFile = path.join(path.dirname(metaFile), 'component.module.ts');
     if (!fs.existsSync(moduleFile)) {
-      console.warn(`Skipping ${featureId}: no feature.module.ts found`);
+      console.warn(`Skipping ${featureId}: no component.module.ts found`);
       continue;
     }
     
     // Dynamic import to load metadata
     const metaModule = await import(metaFile);
-    const metadata = metaModule.featureMeta;
+    const metadata = metaModule.componentMeta;
     
     features.push({
       id: metadata.id,
@@ -217,8 +217,8 @@ async discoverFeatures() {
 ```
 
 **Key points:**
-- Uses `glob` to find all `feature.meta.ts` files
-- Requires corresponding `feature.module.ts` to exist
+- Uses `glob` to find all `component.meta.ts` files
+- Requires corresponding `component.module.ts` to exist
 - Uses dynamic `import()` to load metadata in Node.js context
 - Returns enriched feature objects with file paths
 
@@ -228,10 +228,10 @@ The metadata is loaded using Node.js `import()`:
 
 ```javascript
 const metaModule = await import(metaFile);
-const metadata = metaModule.featureMeta;
+const metadata = metaModule.componentMeta;
 ```
 
-This runs the TypeScript file as-is (compiled by previous TS compilation) and extracts the exported `featureMeta` constant.
+This runs the TypeScript file as-is (compiled by previous TS compilation) and extracts the exported `componentMeta` constant.
 
 #### Validation Process
 
@@ -324,15 +324,15 @@ validateFeatures(features) {
 
 #### Code Generation
 
-**Generated file 1: `features.registry.ts`**
+**Generated file 1: `components.registry.ts`**
 
 ```javascript
 generateRegistry(features) {
   const imports = features.map((f, i) => 
-    `import { featureMeta as featureMeta${i} } from '${this.relativePath(f.metaFile)}';`
+    `import { componentMeta as componentMeta${i} } from '${this.relativePath(f.metaFile)}';`
   ).join('\n');
   
-  const featuresArray = features.map((f, i) => `featureMeta${i}`).join(',\n  ');
+  const featuresArray = features.map((f, i) => `componentMeta${i}`).join(',\n  ');
   
   const navEntries = features
     .filter(f => f.metadata.nav)
@@ -349,7 +349,7 @@ generateRegistry(features) {
     .join(',\n');
   
   return `
-// AUTO-GENERATED by FeatureDiscoveryPlugin - DO NOT EDIT
+// AUTO-GENERATED by ComponentDiscoveryPlugin - DO NOT EDIT
 ${imports}
 
 export const features = [
@@ -363,7 +363,7 @@ ${navEntries}
 }
 ```
 
-**Generated file 2: `generated-features.module.ts`**
+**Generated file 2: `generated-components.module.ts`**
 
 ```javascript
 generateModule(features) {
@@ -374,7 +374,7 @@ generateModule(features) {
   const modulesList = features.map((f, i) => `Module${i}`).join(',\n    ');
   
   return `
-// AUTO-GENERATED by FeatureDiscoveryPlugin - DO NOT EDIT
+// AUTO-GENERATED by ComponentDiscoveryPlugin - DO NOT EDIT
 import { Module } from '@nestjs/common';
 ${imports}
 
@@ -383,7 +383,7 @@ ${imports}
     ${modulesList}
   ],
 })
-export class GeneratedFeaturesModule {}
+export class GeneratedComponentsModule {}
   `;
 }
 ```
@@ -398,9 +398,9 @@ export class GeneratedFeaturesModule {}
 
 ```javascript
 apply(compiler) {
-  compiler.hooks.beforeCompile.tapAsync('FeatureDiscoveryPlugin', async (params, callback) => {
+  compiler.hooks.beforeCompile.tapAsync('ComponentDiscoveryPlugin', async (params, callback) => {
     try {
-      console.log('[FeatureDiscovery] Scanning for features...');
+      console.log('[ComponentDiscovery] Scanning for features...');
       
       // Add context dependencies for watching
       const contextDependencies = [
@@ -413,7 +413,7 @@ apply(compiler) {
       
       // Discover features
       const features = await this.discoverFeatures();
-      console.log(`[FeatureDiscovery] Found ${features.length} feature(s)`);
+      console.log(`[ComponentDiscovery] Found ${features.length} feature(s)`);
       
       // Validate features
       const issues = this.validateFeatures(features);
@@ -433,15 +433,15 @@ apply(compiler) {
       // Write files
       fs.mkdirSync(this.generatedDir, { recursive: true });
       fs.writeFileSync(
-        path.join(this.generatedDir, 'features.registry.ts'),
+        path.join(this.generatedDir, 'components.registry.ts'),
         registryCode
       );
       fs.writeFileSync(
-        path.join(this.generatedDir, 'generated-features.module.ts'),
+        path.join(this.generatedDir, 'generated-components.module.ts'),
         moduleCode
       );
       
-      console.log('[FeatureDiscovery] Successfully generated registry and module');
+      console.log('[ComponentDiscovery] Successfully generated registry and module');
       callback();
     } catch (error) {
       callback(error);
@@ -469,14 +469,14 @@ apply(compiler) {
 #### `webpack-hmr.config.js` (Development)
 
 ```javascript
-const FeatureDiscoveryPlugin = require('./build/feature-discovery-plugin');
+const ComponentDiscoveryPlugin = require('./build/component-discovery-plugin');
 
 module.exports = function (options, webpack) {
   return {
     ...options,
     plugins: [
       ...options.plugins,
-      new FeatureDiscoveryPlugin({ rootDir: __dirname }),
+      new ComponentDiscoveryPlugin({ rootDir: __dirname }),
       // ... other plugins
     ],
   };
@@ -486,12 +486,12 @@ module.exports = function (options, webpack) {
 #### `webpack.config.js` (Production)
 
 ```javascript
-const FeatureDiscoveryPlugin = require('./build/feature-discovery-plugin');
+const ComponentDiscoveryPlugin = require('./build/component-discovery-plugin');
 
 module.exports = {
   // ... webpack config
   plugins: [
-    new FeatureDiscoveryPlugin({ rootDir: __dirname }),
+    new ComponentDiscoveryPlugin({ rootDir: __dirname }),
     // ... other plugins
   ],
 };
@@ -503,7 +503,7 @@ Both configs use the same plugin to ensure consistent behavior between developme
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { GeneratedFeaturesModule } from './components.generated/generated-features.module';
+import { GeneratedComponentsModule } from './components.generated/generated-components.module';
 
 @Module({
   imports: [
@@ -514,18 +514,18 @@ import { GeneratedFeaturesModule } from './components.generated/generated-featur
     ErrorsModule,
     
     // Generated features module (includes all discovered features)
-    GeneratedFeaturesModule,
+    GeneratedComponentsModule,
   ],
 })
 export class AppModule {}
 ```
 
-The `GeneratedFeaturesModule` is imported like any other NestJS module. It dynamically imports all discovered feature modules.
+The `GeneratedComponentsModule` is imported like any other NestJS module. It dynamically imports all discovered feature modules.
 
 #### `src/systemComponents/core/ui/LeftMenu.tsx`
 
 ```typescript
-import { navigation } from '../../../components.generated/features.registry';
+import { navigation } from '../../../components.generated/components.registry';
 
 export function LeftMenu() {
   return (
@@ -553,8 +553,8 @@ The navigation component reads the generated `navigation` array and renders link
 
 ```
 src/components.generated/
-├── features.registry.ts           # Generated registry
-├── generated-features.module.ts   # Generated NestJS module
+├── components.registry.ts           # Generated registry
+├── generated-components.module.ts   # Generated NestJS module
 └── README.md                      # Explains these are generated
 ```
 
@@ -564,9 +564,9 @@ These files are created by the plugin during each build and should not be edited
 
 ```
 src/components/<feature-id>/
-├── feature.meta.ts                # Metadata (required)
-├── feature.module.ts              # NestJS module (required)
-├── feature.controller.ts          # Controller with routes (required)
+├── component.meta.ts                # Metadata (required)
+├── component.module.ts              # NestJS module (required)
+├── component.controller.ts          # Controller with routes (required)
 ├── ui/                            # UI components
 │   ├── <Feature>Page.tsx
 │   ├── <Feature>Page.spec.tsx
@@ -621,7 +621,7 @@ Test individual plugin methods:
 
 ```javascript
 // Plugin unit tests
-describe('FeatureDiscoveryPlugin', () => {
+describe('ComponentDiscoveryPlugin', () => {
   describe('validateFeatures', () => {
     it('detects duplicate feature IDs', () => {
       const features = [
@@ -649,7 +649,7 @@ Test full discovery and generation:
 describe('Feature Discovery Integration', () => {
   it('discovers and registers demo feature', async () => {
     // After build completes, the demo feature should be registered
-    const { features } = await import('src/components.generated/features.registry');
+    const { features } = await import('src/components.generated/components.registry');
     expect(features).toContainEqual(
       expect.objectContaining({ id: 'demo' })
     );
@@ -707,7 +707,7 @@ ERROR in Feature validation failed:
 Discovery errors (e.g., malformed metadata) are caught and reported:
 
 ```
-ERROR in Failed to load feature metadata from src/components/demo/feature.meta.ts:
+ERROR in Failed to load feature metadata from src/components/demo/component.meta.ts:
   SyntaxError: Unexpected token '}' 
 ```
 
@@ -716,8 +716,8 @@ ERROR in Failed to load feature metadata from src/components/demo/feature.meta.t
 File system errors (e.g., permission denied) are caught:
 
 ```
-ERROR in [FeatureDiscovery] Failed to write generated files:
-  EACCES: permission denied, open 'src/components.generated/features.registry.ts'
+ERROR in [ComponentDiscovery] Failed to write generated files:
+  EACCES: permission denied, open 'src/components.generated/components.registry.ts'
 ```
 
 ## Future Extensions
@@ -765,7 +765,7 @@ The plugin architecture is designed to be extended:
 
 **Debug:**
 1. Check plugin is registered in webpack config
-2. Look for console output: `[FeatureDiscovery] Scanning for features...`
+2. Look for console output: `[ComponentDiscovery] Scanning for features...`
 3. Verify `rootDir` option is correct
 
 ### Features Not Discovered
@@ -773,8 +773,8 @@ The plugin architecture is designed to be extended:
 **Symptom:** Feature exists but not in registry
 
 **Debug:**
-1. Ensure files are named exactly: `feature.meta.ts`, `feature.module.ts`
-2. Check `featureMeta` export exists and is named correctly
+1. Ensure files are named exactly: `component.meta.ts`, `component.module.ts`
+2. Check `componentMeta` export exists and is named correctly
 3. Look for console warnings about missing module files
 
 ### Validation Not Working
@@ -797,7 +797,7 @@ The plugin architecture is designed to be extended:
 
 ## Summary
 
-The feature discovery system provides:
+The component discovery system provides:
 
 ✅ **Automatic discovery** - No manual registration  
 ✅ **Build-time validation** - Catch errors early  
@@ -808,4 +808,4 @@ The feature discovery system provides:
 
 The implementation uses standard Webpack plugin patterns and integrates cleanly with NestJS, making it maintainable and extensible.
 
-For usage instructions, see [FEATURES_DISCOVERY_GUIDE.md](../dev_guides/FEATURES_DISCOVERY_GUIDE.md).
+For usage instructions, see [COMPONENTS_DISCOVERY_GUIDE.md](../dev_guides/COMPONENTS_DISCOVERY_GUIDE.md).

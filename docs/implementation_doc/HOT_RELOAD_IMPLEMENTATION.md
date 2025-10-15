@@ -53,16 +53,16 @@ module.exports = function (options, webpack) {
 - Keeps SVG handling
 - Minimal configuration
 
-### 2a. Feature Discovery/Codegen Integration with HMR
+### 2a. Components Discovery/Codegen Integration with HMR
 
-The feature discovery plugin (see `build/feature-discovery-plugin.js`) runs during Webpack compilation:
+The components discovery plugin (see `build/component-discovery-plugin.js`) runs during Webpack compilation:
 
 **Discovery Process:**
-- Scans `src/components/**/feature.meta.ts` and related modules
+- Scans `src/components/**/component.meta.ts` and related modules
 - Loads metadata and validates against schema
 - Generates `src/components.generated/*` files:
-  - `features.registry.ts` - Typed registry of all discovered features
-  - `generated-features.module.ts` - NestJS DynamicModule that imports all feature modules
+  - `components.registry.ts` - Typed registry of all discovered components
+  - `generated-components.module.ts` - NestJS DynamicModule that imports all component modules
 
 **Validation & Error Surfacing:**
 - The plugin performs strict validation on all feature metadata
@@ -79,7 +79,7 @@ The feature discovery plugin (see `build/feature-discovery-plugin.js`) runs duri
   - Terminal shows clear error messages with actionable fix hints
 
 **Context Invalidation:**
-- Changes to `feature.meta.ts`, `feature.module.ts`, or adding/removing feature folders trigger discovery
+- Changes to `component.meta.ts`, `component.module.ts`, or adding/removing component folders trigger discovery
 - The plugin uses Webpack context dependencies to watch for these changes
 - Generated files are automatically recreated on each build
 

@@ -6,12 +6,12 @@ Branch: 001-as-the-project
 ## Questions and Decisions
 
 1) Compile-time discovery with Webpack 5 while keeping strong types
-- Decision: Use Webpack `require.context` equivalent (`import.meta.webpackContext` or `require.context` via compatibility) to glob `src/components/**/feature.meta.ts` and `src/components/**/feature.module.ts`. Feed discovered modules into a small build plugin that validates metadata and emits generated TS files (`features.registry.ts` and `generated-features.module.ts`).
+- Decision: Use Webpack context to glob `src/components/**/component.meta.ts` and `src/components/**/component.module.ts`. Feed discovered modules into a small build plugin that validates metadata and emits generated TS files (`components.registry.ts` and `generated-components.module.ts`).
 - Rationale: Ensures zero runtime FS scanning and enables typed imports for the aggregator module. Works in watch/HMR and can fail the build on validation errors.
 - Alternatives considered: (a) Runtime `fs.readdir` scan — rejected per FR-012. (b) Manual registry edits — rejected per FR-002. (c) Babel/ts-node preprocess — extra complexity; Webpack context is native and already used in this repo.
 
 2) Generating a NestJS DynamicModule to aggregate per-feature modules
-- Decision: Emit `GeneratedFeaturesModule` with `@Module({ imports: [ ...featureModules ] })` and export it. Ensure `AppModule` imports this generated module by a stable path.
+- Decision: Emit `GeneratedComponentsModule` with `@Module({ imports: [ ...featureModules ] })` and export it. Ensure `AppModule` imports this generated module by a stable path.
 - Rationale: Maximizes use of native NestJS module system; keeps feature autonomy. Generation avoids external file edits per feature.
 - Alternatives: (a) Single controller that dispatches to features via registry — less Nest-native, harder to compose guards/providers. (b) Routing middleware — less idiomatic for NestJS modules.
 
@@ -21,7 +21,7 @@ Branch: 001-as-the-project
 - Alternatives: (a) Runtime checks in bootstrap — too late; won’t block HMR updates reliably.
 
 4) Metadata schema and placement
-- Decision: `feature.meta.ts` exporting `export const featureMeta = { ... } as const` with dedicated TS types to validate shape at compile time; runtime validation also performed during codegen.
+- Decision: `component.meta.ts` exporting `export const componentMeta = { ... } as const` with dedicated TS types to validate shape at compile time; runtime validation also performed during codegen.
 - Rationale: Clear convention, simple to document, lives inside the feature folder.
 - Alternatives: JSON files — less TypeScript-friendly; TS affords editor hints.
 
@@ -30,26 +30,26 @@ Branch: 001-as-the-project
 - Rationale: Matches spec FR-012 and clarifications.
 
 6) HMR detection and rebuild behavior
-- Decision: Rely on Webpack watch mode; any add/remove/rename under `src/components/**/feature.meta.ts` or `feature.module.ts` triggers context invalidation and re-generation of aggregator files, then HMR applies if no validation errors.
+- Decision: Rely on Webpack watch mode; any add/remove/rename under `src/components/**/component.meta.ts` or `component.module.ts` triggers context invalidation and re-generation of aggregator files, then HMR applies if no validation errors.
 - Rationale: Native behavior; no custom watchers needed.
 
 ## Implementation Blueprint
 
 - Add a small codegen harness invoked from Webpack config (a custom plugin or a pre-build script) that:
   1. Discovers features via Webpack context.
-  2. Imports each `feature.meta.ts` and `feature.module.ts` virtually.
+  2. Imports each `component.meta.ts` and `component.module.ts` virtually.
   3. Validates:
      - Unique `feature.id` across all features
      - Unique route `path` across all features
      - Required fields present; paths valid
   4. Emits TS files under `src/components.generated/`:
-     - `features.registry.ts`: array of Feature definitions and computed nav entries
-     - `generated-features.module.ts`: a NestJS DynamicModule importing feature modules
+  - `components.registry.ts`: array of Component definitions and computed nav entries
+  - `generated-components.module.ts`: a NestJS DynamicModule importing component modules
   5. Emits readable diagnostics and fails compilation on error.
 
 - Consumption points:
-  - `AppModule` imports `GeneratedFeaturesModule` from `src/components.generated/generated-features.module`
-  - Navigation UI reads from `features.registry.ts` to build the left menu
+  - `AppModule` imports `GeneratedComponentsModule` from `src/components.generated/generated-components.module`
+  - Navigation UI reads from `components.registry.ts` to build the left menu
 
 ## NestJS doc references (summary)
 - Dynamic modules: Use `Module` metadata factory to compose imports; generated file exports a standard `@Module({ imports: [...] })`.

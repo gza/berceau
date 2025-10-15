@@ -99,7 +99,7 @@ describe("Benefits of Strict Validation", () => {
     // 1. What the problem is ("has 'nav' but no primary route")
     // 2. Which feature has the issue (feature ID)
     // 3. How to fix it ("mark one route with isPrimary: true")
-    // 4. Where to fix it (file path to feature.meta.ts)
+    // 4. Where to fix it (file path to component.meta.ts)
     // 5. Which field to look at (routes[].isPrimary)
 
     expect(true).toBe(true)

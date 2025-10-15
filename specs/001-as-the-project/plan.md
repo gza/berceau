@@ -9,10 +9,10 @@ Note: This plan is produced by the speckit workflow per .github/prompts/speckit.
 
 Goal: Allow developers to add a fully self-contained feature by creating a single folder under src/components/<feature-id> containing metadata, a NestJS module with its own controller, UI, styles, and tests. The build pipeline (Webpack 5 + NestJS) discovers these features at compile time and generates a typed registry/aggregator module used to wire routes and navigation without editing files outside the feature folder. Validation happens during compilation; duplicates or schema violations fail the build and block HMR.
 
-Technical approach: Use Webpack 5 context-based discovery and a small code-generation step to emit a generated FeaturesRegistry file and a GeneratedFeaturesModule (NestJS DynamicModule) that imports each feature’s NestJS module. Each feature provides:
-- feature.meta.ts: typed const metadata (id, title, routes, optional nav.label/order)
-- feature.module.ts: NestJS @Module with a controller exporting SSR handler(s)
-- feature.controller.ts: NestJS controller that renders React page(s) via existing SSR utilities
+Technical approach: Use Webpack 5 context-based discovery and a small code-generation step to emit a generated components registry file and a GeneratedComponentsModule (NestJS DynamicModule) that imports each feature’s NestJS module. Each feature provides:
+- component.meta.ts: typed const metadata (id, title, routes, optional nav.label/order)
+- component.module.ts: NestJS @Module with a controller exporting SSR handler(s)
+- component.controller.ts: NestJS controller that renders React page(s) via existing SSR utilities
 - UI assets and tests within the same folder
 
 ## Technical Context
@@ -65,16 +65,16 @@ Non-exhaustive, relevant areas for this feature pattern:
 /home/gza/work/tests/monobackend/src/
 ├── components/
 │   └── <feature-id>/
-│       ├── feature.meta.ts           # typed const metadata
-│       ├── feature.module.ts         # @Module({ controllers: [FeatureController] })
-│       ├── feature.controller.ts     # @Controller with SSR routes
+│       ├── component.meta.ts           # typed const metadata
+│       ├── component.module.ts         # @Module({ controllers: [ComponentController] })
+│       ├── component.controller.ts     # @Controller with SSR routes
 │       ├── ui/                       # React SSR components + styles
 │       └── test/                     # Unit/integration tests
 ├── systemComponents/                 # Existing system pages/modules
 ├── ssr/                              # SSR helpers
 └── components.generated/             # GENERATED (git-ignored)
-    ├── features.registry.ts          # GENERATED: typed registry of discovered features
-    └── generated-features.module.ts  # GENERATED: NestJS DynamicModule aggregating features
+    ├── components.registry.ts          # GENERATED: typed registry of discovered components
+    └── generated-components.module.ts  # GENERATED: NestJS DynamicModule aggregating components
 ```
 
 Structure Decision: Single NestJS app with SSR. Features are autonomous NestJS modules living under src/components. A generated DynamicModule wires them into the application without editing external files. Registration and validation are performed at build time by a Webpack-powered codegen step.

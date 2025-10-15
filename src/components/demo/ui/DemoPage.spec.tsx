@@ -15,15 +15,16 @@ describe("DemoPage", () => {
   it("should render the welcome message", () => {
     render(<DemoPage title="Demo" />)
 
-    expect(screen.getByText(/Welcome to the Demo feature/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Welcome to the Demo component/i),
+    ).toBeInTheDocument()
   })
 
-  it("should render the feature files list", () => {
+  it("should render the component files list", () => {
     render(<DemoPage title="Demo" />)
 
-    expect(screen.getByText(/feature.meta.ts/)).toBeInTheDocument()
-    expect(screen.getByText(/feature.module.ts/)).toBeInTheDocument()
-    expect(screen.getByText(/feature.controller.ts/)).toBeInTheDocument()
+    expect(screen.getByText(/component.meta.ts/i)).toBeInTheDocument()
+    expect(screen.getByText(/component.controller.ts/)).toBeInTheDocument()
     expect(screen.getByText(/ui\/DemoPage.tsx/)).toBeInTheDocument()
   })
 })

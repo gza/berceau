@@ -1,28 +1,29 @@
 <!--
 Sync Impact Report:
-- Version change: 1.3.0 → 1.4.0
+- Version change: 1.4.0 → 1.5.0
 - List of modified principles: None
-- Added sections: 
-  - V. Security by Design
+- Added sections: None
 - Removed sections: None
 - Templates requiring updates:
-  - .specify/templates/spec-template.md (✅ updated)
-  - .specify/templates/tasks-template.md (✅ updated)
+  - .specify/templates/plan-template.md (✅ updated)
+  - .github/prompts/speckit.tasks.prompt.md (✅ updated)
+  - .github/prompts/speckit.constitution.prompt.md (✅ updated)
+  - README.md (✅ reviewed, no changes required)
 - Follow-up TODOs:
   - None
 -->
-# Web Admin Interface Constitution
+# Web Admin Platform Constitution
 
 ## Core Principles
 
 ### I. Service-Oriented Architecture
-The application's core business logic MUST be encapsulated in well-defined services, organized by internal domains. These services should be consumed by the server-side rendering engine to generate HTML. Where necessary, these same services can be exposed via a documented and tested API for extensions or asynchronous client-side interactions.
+The ultimate goal is to provide a framework and hosting platform for features deployed as third-party components called "components". The platform's system components MUST be encapsulated in well-defined services, organized by internal domains. These "systemComponents" services should be consumed by others "components" or "systemComponents". These services are exposed via a documented and tested API (Typescript, or network based API).
 
-### II. Server-Side Rendering (SSR) with JSX
-The application MUST use server-side rendering with JSX for the frontend. This ensures a fast initial page load and a good user experience.
+### II. UI Server-Side Rendering (SSR) with JSX
+The application MUST use server-side rendering with JSX for the UI. This ensures a fast initial page load and a good user experience.
 
-### III. Future-Ready Service Extensions
-While direct third-party extensions are not supported in the initial version, the architecture MUST be designed to accommodate future expansion through a modular extension system. New internal services SHOULD be developed as self-contained packages, encapsulating both their backend logic and frontend UI components. This prepares the application for a future where new features can be added as pluggable extensions.
+### III. Component-Hosting Platform
+The Platform MUST guarantee to third-party components a secure, reliable and well-documented environment, ensuring they can interact with others and the platform's core services effectively.
 
 ### IV. Test-Driven Development (TDD)
 All new features and bug fixes MUST be accompanied by a comprehensive suite of tests. TDD is mandatory: tests are written first, then the implementation.
@@ -38,4 +39,14 @@ All new features and bug fixes MUST be developed in a separate branch and submit
 
 This constitution is the supreme law of the project. All other documents, practices, and decisions MUST be consistent with it. Amendments to this constitution require a formal proposal, a period of public discussion, and a supermajority vote of the project's core contributors.
 
-**Version**: 1.4.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-10-15
+Versioning & Compliance:
+- Versioning policy: All amendments MUST follow Semantic Versioning.
+  - MAJOR: Backward-incompatible governance/principle removals or redefinitions
+  - MINOR: New principle/section added or materially expanded guidance
+  - PATCH: Clarifications, wording, and non-semantic refinements
+- Compliance review: Every feature plan MUST include a "Constitution Check" gate.
+  Reviewers MUST block merges that violate non-negotiable principles. The project
+  MUST conduct a compliance review at least once per minor release (or quarterly),
+  logging any justified exceptions in feature plans under "Complexity Tracking".
+
+**Version**: 1.5.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-10-15

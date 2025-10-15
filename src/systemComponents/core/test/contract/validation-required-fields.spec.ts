@@ -57,8 +57,8 @@ describe("Feature Validation: Missing Required Fields", () => {
 
 describe("Feature Validation: Error Message Quality", () => {
   it("should include file path in all validation errors", () => {
-    // Every error should reference feature.meta.ts file path
-    // Format: path.join(feature.folderPath, 'feature.meta.ts')
+    // Every error should reference component.meta.ts file path
+    // Format: path.join(feature.folderPath, 'component.meta.ts')
     // Helps developers quickly locate and fix issues
 
     expect(true).toBe(true)

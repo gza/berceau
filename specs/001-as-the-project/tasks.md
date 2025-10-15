@@ -48,31 +48,31 @@ Purpose: Core infrastructure that MUST be complete before ANY user story can be 
 
 ⚠️ CRITICAL: No user story work can begin until this phase is complete
 
-- [X] T004 Implement Webpack codegen plugin to discover features
-  - File: `build/feature-discovery-plugin.js` (Node JS plugin)
+- [X] T004 Implement Webpack codegen plugin to discover components
+  - File: `build/component-discovery-plugin.js` (Node JS plugin)
   - Responsibilities:
-    - Discover `src/components/**/feature.meta.ts` and `src/components/**/feature.module.ts`
+  - Discover `src/components/**/component.meta.ts` and `src/components/**/component.module.ts`
     - Load metadata modules (in Node) and validate against types
     - Build in-memory model of Features and Routes
     - On success, emit:
-      - `src/components.generated/features.registry.ts` (typed registry and computed navigation)
-      - `src/components.generated/generated-features.module.ts` (NestJS DynamicModule that imports all discovered feature modules)
+  - `src/components.generated/components.registry.ts` (typed registry and computed navigation)
+  - `src/components.generated/generated-components.module.ts` (NestJS DynamicModule that imports all discovered component modules)
     - On validation errors, push readable compilation errors to block HMR/build
 
 - [X] T005 [P] Wire plugin into HMR webpack config
   - File: `webpack-hmr.config.js`
-  - Add `new (require('./build/feature-discovery-plugin'))({ rootDir: __dirname })`
+  - Add `new (require('./build/component-discovery-plugin'))({ rootDir: __dirname })`
   - Ensure plugin runs before TS compilation so generated files exist for the same build
 
 - [X] T006 [P] Add safe bootstrap import of generated module
   - File: `src/app.module.ts`
-  - Import `GeneratedFeaturesModule` from `./components.generated/generated-features.module`
+  - Import `GeneratedComponentsModule` from `./components.generated/generated-components.module`
   - Include it in `imports: [...]` after core/system modules
   - Ensure build works even when no features discovered (generate empty module fallback)
 
 - [X] T007 Left navigation consumes registry instead of hardcoding
   - File: `src/systemComponents/core/ui/LeftMenu.tsx`
-  - Replace hardcoded `menuItems` with data sourced from `features.registry.ts`
+  - Replace hardcoded `menuItems` with data sourced from `components.registry.ts`
   - Implement sort by `order` ascending then `label` as per spec
   - Preserve existing core entries (Welcome/About) and append feature entries
 
@@ -109,18 +109,18 @@ Independent Test: Run dev server with watch/HMR. Create `src/components/demo/` w
 
 - [X] T011 [P] [US1] Scaffold minimal example feature for docs/tests
   - Files under: `src/components/demo/`
-    - `feature.meta.ts` exporting `featureMeta: FeatureMeta`
-    - `feature.module.ts` exporting a Nest module
-    - `feature.controller.ts` with `@Get('/demo')` SSR handler using `renderPage`
+  - `component.meta.ts` exporting `componentMeta: ComponentMeta`
+  - `component.module.ts` exporting a Nest module
+  - `component.controller.ts` with `@Get('/demo')` SSR handler using `renderPage`
     - `ui/DemoPage.tsx` and optional `ui/demo.css`
 
 - [X] T012 [US1] Registry generation: emit discovered routes and nav entries
-  - File: `src/components.generated/features.registry.ts` (generated)
+  - File: `src/components.generated/components.registry.ts` (generated)
   - Export: `features`, `navigation` arrays with proper types
 
-- [X] T013 [US1] GeneratedFeaturesModule aggregates feature modules
-  - File: `src/components.generated/generated-features.module.ts` (generated)
-  - Export: `GeneratedFeaturesModule` with `@Module({ imports: [ ...featureModules ] })`
+- [X] T013 [US1] GeneratedComponentsModule aggregates component modules
+  - File: `src/components.generated/generated-components.module.ts` (generated)
+  - Export: `GeneratedComponentsModule` with `@Module({ imports: [ ...featureModules ] })`
 
 - [X] T014 [US1] LeftMenu integration reads `navigation` from registry
   - Ensure nav link for Demo appears with correct label/order when `nav` present
@@ -138,7 +138,7 @@ Independent Test: Change metadata title/description and confirm updates on next 
 ### Tests for User Story 2 (TDD) ⚠️
 
 - [X] T015 [P] [US2] Integration: metadata change updates page title and nav label
-  - Modify `demo/feature.meta.ts` in test and assert updated values appear after rebuild.
+  - Modify `demo/component.meta.ts` in test and assert updated values appear after rebuild.
 
 - [X] T016 [P] [US2] Test discovery: tests under feature folder are executed
   - Place `src/components/demo/test/*` and verify they run with repository’s Jest config without extra setup.
@@ -150,7 +150,7 @@ Independent Test: Change metadata title/description and confirm updates on next 
 ### Implementation for User Story 2
 
 - [X] T017 [P] [US2] HMR context invalidation on add/remove/rename
-  - Plugin: ensure changes in `feature.meta.ts`/`feature.module.ts` trigger regeneration
+  - Plugin: ensure changes in `component.meta.ts`/`component.module.ts` trigger regeneration
 
 - [X] T018 [US2] Nav sort stability and determinism
   - Implement stable sort for `navigation` by `order`, then `label` per spec; add unit coverage if needed.
@@ -202,10 +202,10 @@ Purpose: Improvements affecting multiple user stories and documentation updates.
   - Update `docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md` to mention that the discovery/codegen plugin surfaces validation errors as webpack compilation errors that block HMR.
 
 - [X] T025 [P] Developer Guide: How to add a drop-in feature
-  - Add new doc: `docs/dev_guides/FEATURES_DISCOVERY_GUIDE.md` (how to use it — steps from quickstart, required files, metadata schema, troubleshooting)
+  - Add new doc: `docs/dev_guides/COMPONENTS_DISCOVERY_GUIDE.md` (how to use it — steps from quickstart, required files, metadata schema, troubleshooting)
 
 - [X] T026 [P] Implementation Notes: How discovery works
-  - Add new doc: `docs/implementation_doc/FEATURES_DISCOVERY_IMPLEMENTATION.md` (how it works — plugin overview, generation outputs, validation rules, HMR behavior)
+  - Add new doc: `docs/implementation_doc/COMPONENTS_DISCOVERY_IMPLEMENTATION.md` (how it works — plugin overview, generation outputs, validation rules, HMR behavior)
 
 - [X] T027 Performance check at scale
   - Script or doc note to measure discovery time with 50–100 features; ensure under 3s incremental rebuilds per SC-002.

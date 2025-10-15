@@ -50,7 +50,7 @@ describe("Feature Validation: Error Message Format", () => {
 
   it("should include file path in error objects", () => {
     // Error objects have filePath property
-    // Points to feature.meta.ts file
+    // Points to component.meta.ts file
     // IDEs can parse this for quick navigation
 
     expect(true).toBe(true)

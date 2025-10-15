@@ -5,7 +5,7 @@ Assets (SVG, PNG, JPG, GIF, WebP, CSS) are imported directly. Webpack copies the
 ## Quick Start (one CSS + one SVG + one PNG)
 
 ```tsx
-// src/components/feature/ui/MyComponent.tsx
+// src/components/component/ui/MyComponent.tsx
 import styles from "./styles.css"
 import icon from "./icon.svg"
 import logo from "./logo.png"
@@ -26,7 +26,7 @@ Result:
 - `icon` → `/assets/components/.../icon.svg`
 - `logo` → `/assets/components/.../logo.png`
 
-Tip: In component-scoped features under `src/components/<feature-id>/`, co-locate UI assets (SVG, images, CSS) next to the TSX files. They will be copied to `/assets/components/<feature-id>/...` and URLs will be stable across SSR and client requests.
+Tip: In component-scoped components under `src/components/<component-id>/`, co-locate UI assets (SVG, images, CSS) next to the TSX files. They will be copied to `/assets/components/<component-id>/...` and URLs will be stable across SSR and client requests.
 
 ## Supported Types
 
@@ -81,7 +81,7 @@ Starts the dev server with HMR:
 - Express serves assets at `/assets/`
 - Saving changes triggers fast rebuilds (~500ms)
 
-Working with component-scoped features:
-- Adding/removing assets inside `src/components/<feature-id>/ui/` is detected by Webpack.
-- When paired with the feature discovery step, UI updates and asset changes are hot-reloaded together.
+Working with component-scoped components:
+- Adding/removing assets inside `src/components/<component-id>/ui/` is detected by Webpack.
+- When paired with the components discovery step, UI updates and asset changes are hot-reloaded together.
 - Ensure imports are relative to the TSX component so the preserved directory structure remains logical.

@@ -1,33 +1,33 @@
 /**
- * Type definitions for feature metadata shape
+ * Type definitions for component metadata shape
  *
- * These types define the structure of feature metadata used throughout
- * the feature discovery and registration system.
+ * These types define the structure of component metadata used throughout
+ * the components discovery and registration system.
  */
 
 /**
- * Defines a single route within a feature
+ * Defines a single route within a component
  */
 export type RouteDefinition = {
   /** URL path for this route (e.g., '/demo', '/users') */
   path: string
   /** Human-readable title for the route */
   title: string
-  /** Whether this is the primary route for the feature (used for navigation) */
+  /** Whether this is the primary route for the component (used for navigation) */
   isPrimary?: boolean
 }
 
 /**
- * Metadata describing a feature
+ * Metadata describing a component
  */
-export type FeatureMeta = {
-  /** Unique identifier for the feature (must match folder name convention) */
+export type ComponentMeta = {
+  /** Unique identifier for the component (must match folder name convention) */
   id: string
-  /** Human-readable title for the feature */
+  /** Human-readable title for the component */
   title: string
-  /** Optional description of the feature */
+  /** Optional description of the component */
   description?: string
-  /** Array of routes exposed by this feature */
+  /** Array of routes exposed by this component */
   routes: RouteDefinition[]
   /** Optional navigation configuration */
   nav?: {
@@ -39,8 +39,8 @@ export type FeatureMeta = {
 }
 
 /**
- * Computed navigation entry for a feature
- * Generated from FeatureMeta during discovery
+ * Computed navigation entry for a component
+ * Generated from ComponentMeta during discovery
  */
 export type NavigationEntry = {
   /** Label to display in navigation menu */
@@ -52,10 +52,10 @@ export type NavigationEntry = {
 }
 
 /**
- * Validation issue discovered during feature discovery
+ * Validation issue discovered during component discovery
  */
 export type ValidationIssue = {
-  /** ID of the feature with the issue */
+  /** ID of the component with the issue */
   featureId: string
   /** Severity level */
   severity: "error" | "warning"
@@ -68,9 +68,9 @@ export type ValidationIssue = {
 }
 
 /**
- * Complete feature information including metadata and file location
+ * Complete component information including metadata and file location
  */
-export type Feature = FeatureMeta & {
-  /** Absolute path to the feature folder */
+export type Component = ComponentMeta & {
+  /** Absolute path to the component folder */
   folderPath: string
 }

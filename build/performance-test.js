@@ -29,11 +29,11 @@ function generateMockFeature(index) {
   
   fs.mkdirSync(featureDir, { recursive: true });
   
-  // feature.meta.ts
+  // component.meta.ts
   const metaContent = `
-import type { FeatureMeta } from '../../types';
+import type { ComponentMeta } from '../../types';
 
-export const featureMeta: FeatureMeta = {
+export const componentMeta: ComponentMeta = {
   id: '${featureId}',
   title: 'Performance Test Feature ${index}',
   description: 'Generated for performance testing',
@@ -45,19 +45,19 @@ export const featureMeta: FeatureMeta = {
 } as const;
 `;
   
-  fs.writeFileSync(path.join(featureDir, 'feature.meta.ts'), metaContent);
+  fs.writeFileSync(path.join(featureDir, 'component.meta.ts'), metaContent);
   
-  // feature.module.ts
+  // component.module.ts
   const moduleContent = `
 import { Module } from '@nestjs/common';
 
 @Module({
   controllers: [],
 })
-export class PerfTest${index}FeatureModule {}
+export class PerfTest${index}ComponentModule {}
 `;
   
-  fs.writeFileSync(path.join(featureDir, 'feature.module.ts'), moduleContent);
+  fs.writeFileSync(path.join(featureDir, 'component.module.ts'), moduleContent);
 }
 
 /**
@@ -114,9 +114,9 @@ function setupCleanupHandlers() {
  * Run performance test
  */
 async function runPerformanceTest() {
-  console.log(`\n🧪 Feature Discovery Performance Test`);
+  console.log(`\n🧪 Component Discovery Performance Test`);
   console.log(`${'='.repeat(60)}\n`);
-  console.log(`Creating ${FEATURE_COUNT} mock features...`);
+  console.log(`Creating ${FEATURE_COUNT} mock components...`);
   
   // Set up cleanup handlers before creating any files
   setupCleanupHandlers();
@@ -131,33 +131,33 @@ async function runPerformanceTest() {
   const endSetup = performance.now();
   const setupTime = endSetup - startSetup;
   
-  console.log(`✓ Created ${FEATURE_COUNT} features in ${setupTime.toFixed(0)}ms\n`);
+  console.log(`✓ Created ${FEATURE_COUNT} components in ${setupTime.toFixed(0)}ms\n`);
   
   // Load the plugin and test discovery
-  const FeatureDiscoveryPlugin = require('./feature-discovery-plugin');
-  const plugin = new FeatureDiscoveryPlugin({
+  const ComponentDiscoveryPlugin = require('./component-discovery-plugin');
+  const plugin = new ComponentDiscoveryPlugin({
     rootDir: path.join(__dirname, '..'),
   });
   
   console.log(`Running discovery and validation...`);
   const startDiscovery = performance.now();
   
-  const features = plugin.discoverFeatures();
+  const features = plugin.discoverComponents();
   
   const endDiscovery = performance.now();
   const discoveryTime = endDiscovery - startDiscovery;
   
-  console.log(`✓ Discovered ${features.length} features in ${discoveryTime.toFixed(0)}ms\n`);
+  console.log(`✓ Discovered ${features.length} components in ${discoveryTime.toFixed(0)}ms\n`);
   
   console.log(`Running validation...`);
   const startValidation = performance.now();
   
-  const errors = plugin.validateFeatures(features);
+  const errors = plugin.validateComponents(features);
   
   const endValidation = performance.now();
   const validationTime = endValidation - startValidation;
   
-  console.log(`✓ Validated ${features.length} features in ${validationTime.toFixed(0)}ms`);
+  console.log(`✓ Validated ${features.length} components in ${validationTime.toFixed(0)}ms`);
   console.log(`  Errors: ${errors.length}\n`);
   
   console.log(`Running code generation...`);

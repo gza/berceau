@@ -6,7 +6,8 @@
  * 2. Then by label (ascending, locale-aware)
  */
 
-import { navigation } from "../../../../components.generated/features.registry"
+import { navigation } from "../../../../components.generated/components.registry"
+import type { NavigationEntry } from "../../../../components/types"
 
 describe("Navigation Sort Stability", () => {
   it("should sort navigation entries by order then label", () => {
@@ -61,18 +62,23 @@ describe("Navigation Sort Stability", () => {
 
   it("should sort entries with same order by label alphabetically", () => {
     // Group entries by order
-    const byOrder = new Map()
+    const byOrder = new Map<string | number, NavigationEntry[]>()
 
     for (const entry of navigation) {
-      const order = entry.order ?? "undefined"
+      const order: string | number = entry.order ?? "undefined"
       if (!byOrder.has(order)) {
         byOrder.set(order, [])
       }
-      byOrder.get(order).push(entry)
+      const group = byOrder.get(order)
+      if (group) {
+        group.push(entry)
+      } else {
+        byOrder.set(order, [entry])
+      }
     }
 
     // Check each group is sorted by label
-    for (const [order, entries] of byOrder) {
+    for (const [_order, entries] of byOrder) {
       if (entries.length > 1) {
         for (let i = 0; i < entries.length - 1; i++) {
           const current = entries[i]

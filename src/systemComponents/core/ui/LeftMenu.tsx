@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { navigation } from "../../../components.generated/features.registry"
+import { navigation } from "../../../components.generated/components.registry"
 
 interface NavLink {
   label: string

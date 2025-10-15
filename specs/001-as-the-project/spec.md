@@ -10,7 +10,7 @@
 ### Session 2025-10-14
 
 - Q: How should global navigation order be determined when multiple features provide navigation labels? → A: Explicit numeric order field in feature metadata; missing → append at end.
-- Q: What is the canonical feature metadata file format and placement? → A: TypeScript file `feature.meta.ts` exporting a typed const.
+- Q: What is the canonical component metadata file format and placement? → A: TypeScript file `component.meta.ts` exporting a typed const.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -64,7 +64,7 @@ As a developer, if I make a mistake inside the feature folder (invalid metadata,
 
 - Two features declare the same primary route path or navigation label → validation fails with a conflict report and guidance to resolve during build; no hot update is applied.
 - A feature folder is missing its metadata file or required fields → validation fails with precise diagnostics; build fails.
- - A discoverable feature folder (one containing `feature.meta.ts` or `feature.module.ts`) is missing required metadata fields → validation fails with precise diagnostics; build fails. Folders that only include tests and no `feature.meta.ts`/`feature.module.ts` are ignored by discovery without error.
+ - A discoverable component folder (one containing `component.meta.ts` or `component.module.ts`) is missing required metadata fields → validation fails with precise diagnostics; build fails. Folders that only include tests and no `component.meta.ts`/`component.module.ts` are ignored by discovery without error.
 - Feature defines multiple routes → all declared routes are registered; validation ensures each path is unique across all features.
 - Feature is present but navigation label is intentionally omitted → route remains accessible via URL; no navigation entry is created.
 - Feature folder contains tests only (no routes) → tests run but no routes/nav changes are made; these folders are not considered discoverable features and are ignored by feature discovery without error.

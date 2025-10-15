@@ -38,7 +38,7 @@ describe("Feature Validation: Multiple Primary Routes", () => {
   })
 
   it("should include file path in error message", () => {
-    // Error should point to the feature.meta.ts file
+    // Error should point to the component.meta.ts file
     // Helps developers locate the problematic configuration
 
     expect(true).toBe(true)

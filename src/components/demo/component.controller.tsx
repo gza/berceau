@@ -1,5 +1,5 @@
 /**
- * Demo Feature Controller
+ * Demo Component Controller
  */
 
 import { Controller, Get, Res } from "@nestjs/common"
@@ -12,7 +12,7 @@ export class DemoController {
   @Get("/demo")
   demo(@Res() res: Response) {
     const view = renderPage(<DemoPage title="Demo" />, {
-      title: "Demo - Feature Example",
+      title: "Demo - Component Example",
       currentPath: "/demo",
     })
     res.status(200).send(view)

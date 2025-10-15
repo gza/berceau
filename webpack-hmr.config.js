@@ -1,7 +1,7 @@
 const nodeExternals = require("webpack-node-externals")
 const { RunScriptWebpackPlugin } = require("run-script-webpack-plugin")
 const path = require("path")
-const FeatureDiscoveryPlugin = require("./build/feature-discovery-plugin")
+const ComponentDiscoveryPlugin = require("./build/component-discovery-plugin")
 
 module.exports = function (options, webpack) {
   return {
@@ -56,7 +56,7 @@ module.exports = function (options, webpack) {
     },
     plugins: [
       ...options.plugins,
-      new FeatureDiscoveryPlugin({ rootDir: __dirname }),
+  new ComponentDiscoveryPlugin({ rootDir: __dirname }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.WatchIgnorePlugin({
         paths: [/\.js$/, /\.d\.ts$/, /src[/\\]components\.generated[/\\]/],

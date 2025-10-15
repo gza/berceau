@@ -1,7 +1,7 @@
 const path = require("path")
 const nodeExternals = require("webpack-node-externals")
 const svgToMiniDataURI = require("mini-svg-data-uri")
-const FeatureDiscoveryPlugin = require("./build/feature-discovery-plugin")
+const ComponentDiscoveryPlugin = require("./build/component-discovery-plugin")
 
 module.exports = {
   entry: "./src/main.ts",
@@ -90,7 +90,7 @@ module.exports = {
   },
 
   // Plugins
-  plugins: [new FeatureDiscoveryPlugin({ rootDir: __dirname })],
+  plugins: [new ComponentDiscoveryPlugin({ rootDir: __dirname })],
 
   // Source maps for debugging
   devtool:

@@ -1,7 +1,7 @@
 /**
- * Integration test: Feature discovery and route exposure
+ * Integration test: Component discovery and route exposure
  *
- * Tests that adding a feature folder exposes routes automatically
+ * Tests that adding a component folder exposes routes automatically
  */
 
 import { Test, TestingModule } from "@nestjs/testing"
@@ -9,7 +9,7 @@ import { INestApplication } from "@nestjs/common"
 import request from "supertest"
 import { AppModule } from "../../../../app.module"
 
-describe("Feature Discovery Integration", () => {
+describe("Component Discovery Integration", () => {
   let app: INestApplication
 
   beforeEach(async () => {
@@ -25,7 +25,7 @@ describe("Feature Discovery Integration", () => {
     await app.close()
   })
 
-  it("should expose a route for the demo feature", async () => {
+  it("should expose a route for the demo component", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
     const response = await request(httpServer).get("/demo").expect(200)
 
@@ -34,26 +34,26 @@ describe("Feature Discovery Integration", () => {
     expect(response.text).toContain("Demo")
   })
 
-  it("should return 404 for non-existent feature routes", async () => {
+  it("should return 404 for non-existent component routes", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
-    const response = await request(httpServer).get("/non-existent-feature")
+    const response = await request(httpServer).get("/non-existent-component")
 
     expect(response.status).toBe(404)
   })
 
-  it("should not expose routes for removed or renamed features", async () => {
-    // This test verifies that the discovery system properly handles feature removal
-    // In a real scenario, the webpack rebuild would regenerate the registry without the removed feature
+  it("should not expose routes for removed or renamed components", async () => {
+    // This test verifies that the discovery system properly handles component removal
+    // In a real scenario, the webpack rebuild would regenerate the registry without the removed component
     // For this test, we verify that non-existent routes return 404
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
 
     // Attempt to access a route that would have been removed
-    const response = await request(httpServer).get("/removed-feature")
+    const response = await request(httpServer).get("/removed-component")
 
     expect(response.status).toBe(404)
 
-    // Verify that the navigation doesn't include removed features
-    // by checking that the demo feature still works (proving selective removal)
+    // Verify that the navigation doesn't include removed components
+    // by checking that the demo component still works (proving selective removal)
     const demoResponse = await request(httpServer).get("/demo").expect(200)
     expect(demoResponse.text).toContain("Demo")
   })
