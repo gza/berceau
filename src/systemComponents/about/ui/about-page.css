@@ -1,0 +1,13 @@
+/* About page specific styles */
+
+.about-page h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #303030;
+}
+
+.about-page p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
