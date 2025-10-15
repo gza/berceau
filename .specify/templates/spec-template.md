@@ -89,6 +89,7 @@
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-006**: System MUST be designed to mitigate OWASP Top 10 vulnerabilities.
 
 *Example of marking unclear requirements:*
 

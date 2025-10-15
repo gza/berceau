@@ -1,14 +1,11 @@
 <!--
 Sync Impact Report:
-- Version change: 1.2.0 → 1.3.0
-- List of modified principles:
-  - I. NestJS Monorepo Architecture → I. Service-Oriented Architecture
-  - III. Modular Extension System → III. Future-Ready Service Extensions
-- Added sections: None
-- Removed sections: 
-  - V. Service-Oriented Design
+- Version change: 1.3.0 → 1.4.0
+- List of modified principles: None
+- Added sections: 
+  - V. Security by Design
+- Removed sections: None
 - Templates requiring updates:
-  - .specify/templates/plan-template.md (✅ updated)
   - .specify/templates/spec-template.md (✅ updated)
   - .specify/templates/tasks-template.md (✅ updated)
 - Follow-up TODOs:
@@ -30,6 +27,9 @@ While direct third-party extensions are not supported in the initial version, th
 ### IV. Test-Driven Development (TDD)
 All new features and bug fixes MUST be accompanied by a comprehensive suite of tests. TDD is mandatory: tests are written first, then the implementation.
 
+### V. Security by Design
+All development MUST consider and mitigate threats outlined in the OWASP Top 10. Features must be designed and implemented with security as a primary consideration, and code should be reviewed for potential vulnerabilities before deployment.
+
 ## Development Workflow
 
 All new features and bug fixes MUST be developed in a separate branch and submitted as a pull request. Pull requests MUST be reviewed and approved by at least one other developer before being merged into the main branch.
@@ -38,4 +38,4 @@ All new features and bug fixes MUST be developed in a separate branch and submit
 
 This constitution is the supreme law of the project. All other documents, practices, and decisions MUST be consistent with it. Amendments to this constitution require a formal proposal, a period of public discussion, and a supermajority vote of the project's core contributors.
 
-**Version**: 1.3.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
+**Version**: 1.4.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-10-15
