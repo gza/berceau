@@ -2,7 +2,7 @@
 
 A modern, typesafe boilerplate for building full-stack web applications with **NestJS** and **TSX Server-Side Rendering (SSR)**.
 
-pronouce "Nes-T-S-X" 
+"Berceau" means "cradle" in French, symbolizing a confortable place for new ideas to grow.
 
 ## 🎯 Project Goal
 
