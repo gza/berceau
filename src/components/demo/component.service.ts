@@ -5,13 +5,9 @@
  * within a component. It provides business logic methods for managing DemoUser and DemoPost entities.
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { PrismaService } from "../../database/runtime/prisma.service"
+import type { DemoUser, DemoPost } from "@prisma/client"
 
 export interface CreateUserInput {
   name: string
@@ -36,7 +32,7 @@ export class DemoComponentService {
    * @param data - User data with name and email
    * @returns Created or existing DemoUser
    */
-  async createUser(data: CreateUserInput): Promise<any> {
+  async createUser(data: CreateUserInput): Promise<DemoUser> {
     // Upsert: create if doesn't exist, return existing if it does
     return await this.prisma.demoUser.upsert({
       where: { email: data.email },
@@ -55,7 +51,9 @@ export class DemoComponentService {
    * @param data - Post data including author information
    * @returns Created DemoPost with author relation
    */
-  async createPost(data: CreatePostInput): Promise<any> {
+  async createPost(
+    data: CreatePostInput,
+  ): Promise<DemoPost & { author: DemoUser }> {
     // First, ensure the author exists (upsert)
     const author = await this.createUser({
       name: data.authorName,
@@ -82,7 +80,7 @@ export class DemoComponentService {
    *
    * @returns Array of DemoPost with author relation
    */
-  async getAllPosts(): Promise<any[]> {
+  async getAllPosts(): Promise<Array<DemoPost & { author: DemoUser }>> {
     return await this.prisma.demoPost.findMany({
       include: {
         author: true,
@@ -99,7 +97,7 @@ export class DemoComponentService {
    * @param id - Post ID to delete
    * @throws NotFoundException if post doesn't exist
    */
-  async deletePost(id: string): Promise<any> {
+  async deletePost(id: string): Promise<DemoPost> {
     try {
       return await this.prisma.demoPost.delete({
         where: { id },
@@ -116,7 +114,7 @@ export class DemoComponentService {
    * @returns DemoPost with author relation
    * @throws NotFoundException if post doesn't exist
    */
-  async getPostById(id: string): Promise<any> {
+  async getPostById(id: string): Promise<DemoPost & { author: DemoUser }> {
     const post = await this.prisma.demoPost.findUnique({
       where: { id },
       include: {
@@ -136,7 +134,7 @@ export class DemoComponentService {
    *
    * @returns Array of DemoUser with posts relation
    */
-  async getAllUsers(): Promise<any[]> {
+  async getAllUsers(): Promise<Array<DemoUser & { posts: DemoPost[] }>> {
     return await this.prisma.demoUser.findMany({
       include: {
         posts: true,
