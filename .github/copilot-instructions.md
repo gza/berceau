@@ -19,6 +19,7 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 TypeScript 5.9, Node.js (Express 5): Follow standard conventions
 
 ## Recent Changes
+- 002-as-an-end: Added TypeScript 5.9 / Node.js (NestJS 11) + NestJS (modules, controllers, dependency injection, providers), Prisma ORM v6.7.0+, Webpack 5 (for build integration), Jest (tests)
 - 001-as-the-project: Added TypeScript 5.9 / Node.js (NestJS 11) + NestJS (modules, controllers, dependency injection, providers), React 19 (for JSX SSR), Webpack 5 (context + code generation), Jest (tests), HMR (Webpack + Nest integration)
 
 <!-- MANUAL ADDITIONS START -->

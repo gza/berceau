@@ -21,6 +21,7 @@ module.exports = {
         "<rootDir>/src/**/integration/**/?(*.)+(spec|test).ts",
         "<rootDir>/src/**/*.service.spec.ts",
         "<rootDir>/src/components/**/test/**/?(*.)+(spec|test).ts",
+        "<rootDir>/tests/integration/**/?(*.)+(spec|test).ts",
       ],
       transform: {
         "^.+\\.(ts)$": "ts-jest",
@@ -30,6 +31,9 @@ module.exports = {
         "\\.(gif|ttf|eot|svg|png|jpg|jpeg|webp)$":
           "<rootDir>/src/__mocks__/fileMock.js",
       },
+      // Run database integration tests serially to avoid race conditions
+      // All other tests run in parallel
+      maxWorkers: "50%",
     },
     {
       displayName: "react-tests",
