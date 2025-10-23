@@ -30,8 +30,25 @@ export function PostCard({ post }: PostCardProps) {
     day: "numeric",
   })
 
+  // Client-side script
+  const clientScript = `
+  // Ask confirmation before submitting the delete form
+  document.addEventListener("DOMContentLoaded", () => {
+    const deleteForm = document.querySelector('.demo-delete-form');
+    if (deleteForm) {
+      deleteForm.addEventListener('submit', (event) => {
+        const confirmed = confirm('Are you sure you want to delete this post?');
+        if (!confirmed) {
+          event.preventDefault();
+        }
+      });
+    }
+  });
+  `
+
   return (
     <article className="demo-post-card">
+      <script>{clientScript}</script>
       <div className="demo-post-header">
         <h3 className="demo-post-title">{post.title}</h3>
         <span
