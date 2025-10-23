@@ -64,13 +64,8 @@ export function PostCard({ post }: PostCardProps) {
           <button
             type="submit"
             className="demo-btn demo-btn-danger demo-btn-sm"
-            onClick={(e) => {
-              if (
-                !confirm(`Are you sure you want to delete "${post.title}"?`)
-              ) {
-                e.preventDefault()
-              }
-            }}
+            aria-label={`Delete post ${post.title}`}
+            title={`Delete post: ${post.title}`}
           >
             Delete
           </button>
