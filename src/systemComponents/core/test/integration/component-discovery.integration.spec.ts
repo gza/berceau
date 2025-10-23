@@ -8,6 +8,16 @@ import { Test, TestingModule } from "@nestjs/testing"
 import { INestApplication } from "@nestjs/common"
 import request from "supertest"
 import { AppModule } from "../../../../app.module"
+import { PrismaService } from "../../../../database/runtime/prisma.service"
+
+// Mock PrismaService for tests that don't need database
+const mockPrismaService = {
+  $connect: jest.fn(),
+  $disconnect: jest.fn(),
+  demoPost: {
+    findMany: jest.fn().mockResolvedValue([]),
+  },
+}
 
 describe("Component Discovery Integration", () => {
   let app: INestApplication
@@ -15,7 +25,10 @@ describe("Component Discovery Integration", () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile()
+    })
+      .overrideProvider(PrismaService)
+      .useValue(mockPrismaService)
+      .compile()
 
     app = moduleFixture.createNestApplication()
     await app.init()
@@ -27,7 +40,8 @@ describe("Component Discovery Integration", () => {
 
   it("should expose a route for the demo component", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
-    const response = await request(httpServer).get("/demo").expect(200)
+    // Note: /demo redirects to /demo/posts, so we test /demo/posts directly
+    const response = await request(httpServer).get("/demo/posts").expect(200)
 
     expect(response.headers["content-type"]).toMatch(/text\/html/)
     expect(response.text).toContain("<!DOCTYPE html>")
@@ -54,7 +68,10 @@ describe("Component Discovery Integration", () => {
 
     // Verify that the navigation doesn't include removed components
     // by checking that the demo component still works (proving selective removal)
-    const demoResponse = await request(httpServer).get("/demo").expect(200)
+    // Note: /demo redirects to /demo/posts, so we test /demo/posts directly
+    const demoResponse = await request(httpServer)
+      .get("/demo/posts")
+      .expect(200)
     expect(demoResponse.text).toContain("Demo")
   })
 })

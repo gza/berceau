@@ -2,6 +2,7 @@ const path = require("path")
 const nodeExternals = require("webpack-node-externals")
 const svgToMiniDataURI = require("mini-svg-data-uri")
 const ComponentDiscoveryPlugin = require("./build/component-discovery-plugin")
+const DatabaseSchemaPlugin = require("./build/database-schema-plugin")
 
 module.exports = {
   entry: "./src/main.ts",
@@ -26,7 +27,11 @@ module.exports = {
             transpileOnly: false, // We want type checking
           },
         },
-        exclude: /node_modules/,
+        exclude: [
+          /node_modules/,
+          /\.spec\.tsx?$/, // Exclude test files
+          /__tests__/, // Exclude test directories
+        ],
       },
 
       // SVG files (inline as data URIs for SSR)
@@ -90,7 +95,10 @@ module.exports = {
   },
 
   // Plugins
-  plugins: [new ComponentDiscoveryPlugin({ rootDir: __dirname })],
+  plugins: [
+    new DatabaseSchemaPlugin({ rootDir: __dirname }),
+    new ComponentDiscoveryPlugin({ rootDir: __dirname }),
+  ],
 
   // Source maps for debugging
   devtool:

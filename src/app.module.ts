@@ -3,9 +3,12 @@ import { AboutModule } from "./systemComponents/about/about.module"
 import { ErrorsModule } from "./systemComponents/errors/errors.module"
 import { CoreModule } from "./systemComponents/core/core.module"
 import { GeneratedComponentsModule } from "./components.generated/generated-components.module"
+import { DatabaseModule } from "./database/runtime/database.module"
 
 @Module({
   imports: [
+    // Global database module (provides PrismaService globally)
+    DatabaseModule,
     // System modules (specific routes first)
     CoreModule,
     AboutModule,

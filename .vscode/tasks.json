@@ -1,19 +1,39 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "Run Dev Server",
-			"type": "shell",
-			"command": "npm",
-			"args": [
-				"run",
-				"start:dev"
-			],
-			"isBackground": true,
-			"problemMatcher": [
-				"$tsc-watch"
-			],
-			"group": "build"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Dev Server",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start:dev"],
+      "isBackground": true,
+      "problemMatcher": ["$tsc-watch"],
+      "group": "build",
+      "dependsOn": ["Docker: Compose Up"],
+    },
+    {
+      "label": "Docker: Compose Up",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": [
+        {
+          "pattern": {
+            "regexp": "^$"
+          },
+          "background": {
+            "beginsPattern": "Running",
+            "endsPattern": "(database system is ready|Attaching)"
+          }
+        }
+      ]
+    }
+  ]
 }

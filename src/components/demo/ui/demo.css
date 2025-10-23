@@ -34,3 +34,282 @@
 .demo-page li {
   margin: 0.5rem 0;
 }
+
+/* Posts Page Styles */
+.demo-posts-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.demo-header {
+  margin-bottom: 3rem;
+}
+
+.demo-header h1 {
+  color: #2c3e50;
+  border-bottom: 3px solid #3498db;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.demo-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Add Post Section */
+.demo-add-post {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 3rem;
+}
+
+.demo-add-post h2 {
+  color: #34495e;
+  margin-bottom: 1.5rem;
+}
+
+/* Form Styles */
+.demo-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 640px;
+}
+
+.demo-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.demo-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.demo-form-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.demo-required {
+  color: #e74c3c;
+}
+
+.demo-input,
+.demo-textarea,
+.demo-select {
+  padding: 0.75rem;
+  border: 2px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.demo-input:focus,
+.demo-textarea:focus,
+.demo-select:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.demo-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.demo-form-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+/* Button Styles */
+.demo-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.demo-btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.demo-btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.demo-btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.demo-btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.demo-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Posts List Section */
+.demo-posts-list {
+  margin-top: 3rem;
+}
+
+.demo-posts-list h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.demo-no-posts {
+  text-align: center;
+  color: #95a5a6;
+  font-size: 1.1rem;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.demo-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Post Card Styles */
+.demo-post-card {
+  background: white;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.demo-post-card:hover {
+  border-color: #3498db;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+}
+
+.demo-post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.demo-post-title {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 1.25rem;
+  flex: 1;
+}
+
+.demo-post-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.demo-status-draft {
+  background-color: #f39c12;
+  color: white;
+}
+
+.demo-status-published {
+  background-color: #27ae60;
+  color: white;
+}
+
+.demo-status-archived {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.demo-post-content {
+  margin-bottom: 1rem;
+  color: #34495e;
+  line-height: 1.6;
+}
+
+.demo-post-content p {
+  margin: 0;
+}
+
+.demo-post-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #ecf0f1;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.demo-post-author {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.demo-post-author strong {
+  color: #2c3e50;
+}
+
+.demo-post-email {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.demo-post-date {
+  color: #95a5a6;
+  font-size: 0.8rem;
+}
+
+.demo-post-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.demo-delete-form {
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .demo-posts-page {
+    padding: 1rem;
+  }
+
+  .demo-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-post-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

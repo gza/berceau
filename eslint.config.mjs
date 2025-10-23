@@ -15,7 +15,14 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ["dist/**", "node_modules/**", "coverage/**", "*.config.ts"],
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "coverage/**",
+      "*.config.ts",
+      // Generated code directories
+      "src/components.generated/**",
+    ],
   },
   // Base config for JavaScript files
   {

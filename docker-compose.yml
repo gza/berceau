@@ -1,0 +1,21 @@
+services:
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${DATABASE_ADMIN_USER}
+      POSTGRES_PASSWORD: ${DATABASE_ADMIN_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      # Runtime user (least privilege - DML only)
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+    ports:
+      - 127.0.0.1:${DATABASE_PORT}:5432
+    volumes:
+      - ./database/init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./database/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${DATABASE_NAME} -U ${DATABASE_ADMIN_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

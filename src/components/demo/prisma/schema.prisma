@@ -1,0 +1,31 @@
+// Demo Component Database Schema
+// This schema defines the database models for the demo component
+// It is automatically discovered and merged into the central Prisma schema during build
+
+model DemoUser {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  email     String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  posts     DemoPost[]
+}
+
+model DemoPost {
+  id        String         @id @default(uuid())
+  title     String
+  content   String?
+  status    DemoPostStatus @default(DRAFT)
+  authorId  String
+  author    DemoUser       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([authorId])
+}
+
+enum DemoPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

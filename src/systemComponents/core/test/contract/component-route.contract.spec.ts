@@ -27,7 +27,8 @@ describe("Component Route Contract", () => {
 
   it("should return text/html", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
-    const response = await request(httpServer).get("/demo").expect(200)
+    // Note: /demo redirects to /demo/posts, so we test /demo/posts directly
+    const response = await request(httpServer).get("/demo/posts").expect(200)
 
     // Contract: Response must be text/html
     expect(response.headers["content-type"]).toMatch(/text\/html/)
@@ -40,7 +41,8 @@ describe("Component Route Contract", () => {
 
   it("should include navigation and layout in Component pages", async () => {
     const httpServer = app.getHttpServer() as Parameters<typeof request>[0]
-    const response = await request(httpServer).get("/demo").expect(200)
+    // Note: /demo redirects to /demo/posts, so we test /demo/posts directly
+    const response = await request(httpServer).get("/demo/posts").expect(200)
 
     // Component pages should include the standard layout
     expect(response.text).toContain("Navigation")

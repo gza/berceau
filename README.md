@@ -19,13 +19,14 @@ Berceau provides ~~a production-ready~~ an ⚠️ experimental ⚠️ foundation
 
 - **JSX Server-Side Rendering** with React's `renderToString`
 - **pluggable components**: domain-driven structure, each component owns its controllers, UI, and tests
+- **Postgres Database Access**: Type-safe database access with Prisma, client generation by HMR
 
 ## Future plans
 
 We at WEBGR will continue to explore and try to use it as a base for new internal projects.
 
 We plan to add more features and improvements over time, including:
-- Database integration (Prisma)
+- Automatic database CRUD services generation.
 - Authentication & Authorization (JWT, OAuth)
 - Ready to consume UI components (forms, buttons, tables...)
 - HTMX support
@@ -50,6 +51,7 @@ We plan to add more features and improvements over time, including:
 
 - Node.js 18+ 
 - npm or pnpm
+- Docker (For local development, PostgreSQL will run in a Docker container)
 
 ### Installation
 
@@ -57,17 +59,29 @@ We plan to add more features and improvements over time, including:
 # Install dependencies
 npm install
 
+# Start database (using Docker Compose)
+docker compose up -d
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Build project (generates Prisma Client)
+npm run build
+
+# Run database migrations
+npx prisma migrate dev
+
 # Run development server
 npm run start:dev
 
 # Run tests
 npm run test
-
-# Build for production
-npm run build
 ```
 
 The application will be available at `http://localhost:3000`
+
+**Note**: See the [Database Integration Guide](docs/dev_guides/DATABASE_INTEGRATION_GUIDE.md) for detailed setup instructions.
 
 ## 📁 Project Structure
 
@@ -95,11 +109,13 @@ Comprehensive documentation is available in the `docs/` directory:
 
 ### End-developer Guides
 
+- **[Database Integration Guide](docs/dev_guides/DATABASE_INTEGRATION_GUIDE.md)** - Complete guide to adding database functionality to components
 - **[UI Assets Management Guide](docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
- - **[Components Discovery Guide](docs/dev_guides/COMPONENTS_DISCOVERY_GUIDE.md)** - How to use the components discovery system
+- **[Components Discovery Guide](docs/dev_guides/COMPONENTS_DISCOVERY_GUIDE.md)** - How to use the components discovery system
 
 ### Architecture & Design
 - **[General Architecture](docs/implementation_doc/GENERAL_ARCHITECTURE.md)** - Overview of the project structure and design decisions
+- **[Database Integration Implementation](docs/implementation_doc/DATABASE_INTEGRATION_IMPLEMENTATION.md)** - Database architecture and design decisions
 - **[Hot Reload Implementation](docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md)** - Webpack HMR setup and configuration
 - **[UI Assets Management Implementation](docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)** - Technical implementation details (webpack, serving)
 
@@ -117,6 +133,7 @@ Comprehensive documentation is available in the `docs/` directory:
 - **Framework**: [NestJS](https://nestjs.com/) 11.x
 - **Language**: [TypeScript](https://www.typescriptlang.org/) 5.x
 - **Build Tool**: [Webpack](https://webpack.js.org/) 5.x (via NestJS CLI)
+- **Database**: [Prisma](https://www.prisma.io/) 6.7.0+ with PostgreSQL
 - **Testing**: [Jest](https://jestjs.io/)
 - **SSR**: TSX Server-Side Rendering with react's `renderToString` + Webpack
 

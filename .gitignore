@@ -7,6 +7,13 @@
 # Generated code
 /src/components.generated
 
+# Prisma generated files
+/prisma/schema/*.prisma
+!/prisma/schema/.gitkeep
+
+# Database data
+/database/data
+
 # Environment variables
 .env
 .env.local
