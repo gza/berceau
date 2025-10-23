@@ -127,13 +127,22 @@ class DatabaseSchemaPlugin {
     const files = fs.readdirSync(this.schemaOutputDir)
 
     for (const file of files) {
-      if (file === "main.prisma" || file === ".gitkeep" || !file.endsWith(".prisma")) {
+      if (this.shouldPreserveFile(file)) {
         continue
       }
 
       const filePath = path.join(this.schemaOutputDir, file)
       fs.unlinkSync(filePath)
     }
+  }
+
+  /**
+   * Determine if a file should be preserved during schema directory cleanup
+   * @param {string} file - The filename to check
+   * @returns {boolean} True if the file should be kept, false if it should be deleted
+   */
+  shouldPreserveFile(file) {
+    return file === "main.prisma" || file === ".gitkeep" || !file.endsWith(".prisma")
   }
 
   /**
