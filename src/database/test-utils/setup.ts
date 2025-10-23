@@ -53,7 +53,7 @@ export async function acquireTestLock(
   prisma: PrismaClient,
   lockId: number,
 ): Promise<void> {
-  await prisma.$executeRawUnsafe(`SELECT pg_advisory_lock(${lockId})`)
+  await prisma.$executeRaw`SELECT pg_advisory_lock(${lockId})`
 }
 
 /**
@@ -66,7 +66,7 @@ export async function releaseTestLock(
   prisma: PrismaClient,
   lockId: number,
 ): Promise<void> {
-  await prisma.$executeRawUnsafe(`SELECT pg_advisory_unlock(${lockId})`)
+  await prisma.$executeRaw`SELECT pg_advisory_unlock(${lockId})`
 }
 
 /**
