@@ -43,47 +43,45 @@ describe("DemoComponentService - Database Operations", () => {
 
   describe("createUser", () => {
     it("should create a new user", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const user = await service.createUser({
         name: "John Doe",
         email: "john@example.com",
       })
 
       expect(user).toBeDefined()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(user.name).toBe("John Doe")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(user.email).toBe("john@example.com")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(user.id).toBeDefined()
     })
 
     it("should return existing user if email already exists (upsert)", async () => {
       // Create first user
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const user1 = await service.createUser({
         name: "John Doe",
         email: "john@example.com",
       })
 
       // Try to create user with same email
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const user2 = await service.createUser({
         name: "Jane Doe",
         email: "john@example.com",
       })
 
       // Should return the same user
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(user1.id).toBe(user2.id)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(user2.name).toBe("John Doe") // Original name preserved
     })
   })
 
   describe("createPost", () => {
     it("should create a new post with author", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const post = await service.createPost({
         title: "Test Post",
         content: "This is a test post",
@@ -93,35 +91,33 @@ describe("DemoComponentService - Database Operations", () => {
       })
 
       expect(post).toBeDefined()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post.title).toBe("Test Post")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post.content).toBe("This is a test post")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post.status).toBe("PUBLISHED")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post.author).toBeDefined()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post.author.name).toBe("John Doe")
     })
 
     it("should create post with default DRAFT status", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const post = await service.createPost({
         title: "Draft Post",
         authorName: "Jane Doe",
         authorEmail: "jane@example.com",
       })
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(post.status).toBe("DRAFT")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post.content).toBeNull()
     })
 
     it("should upsert author if they already exist", async () => {
       // Create first post with new author
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const post1 = await service.createPost({
         title: "First Post",
         authorName: "John Doe",
@@ -129,7 +125,7 @@ describe("DemoComponentService - Database Operations", () => {
       })
 
       // Create second post with same author
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const post2 = await service.createPost({
         title: "Second Post",
         authorName: "John Doe",
@@ -137,7 +133,7 @@ describe("DemoComponentService - Database Operations", () => {
       })
 
       // Should use the same author
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(post1.authorId).toBe(post2.authorId)
     })
   })
@@ -174,7 +170,7 @@ describe("DemoComponentService - Database Operations", () => {
 
     it("should return posts in descending order by createdAt", async () => {
       // Create posts with slight delay
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const post1 = await service.createPost({
         title: "First Post",
         authorName: "John",
@@ -184,7 +180,6 @@ describe("DemoComponentService - Database Operations", () => {
       // Small delay to ensure different timestamps
       await new Promise((resolve) => setTimeout(resolve, 10))
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const post2 = await service.createPost({
         title: "Second Post",
         authorName: "Jane",
@@ -193,9 +188,8 @@ describe("DemoComponentService - Database Operations", () => {
 
       const posts = await service.getAllPosts()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(posts[0].id).toBe(post2.id) // Newest first
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(posts[1].id).toBe(post1.id)
     })
   })
@@ -203,7 +197,7 @@ describe("DemoComponentService - Database Operations", () => {
   describe("deletePost", () => {
     it("should delete a post by ID", async () => {
       // Create a post
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const post = await service.createPost({
         title: "To Delete",
         authorName: "John",
@@ -211,7 +205,7 @@ describe("DemoComponentService - Database Operations", () => {
       })
 
       // Delete it
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+
       await service.deletePost(post.id)
 
       // Verify it's gone
@@ -229,7 +223,7 @@ describe("DemoComponentService - Database Operations", () => {
   describe("getPostById", () => {
     it("should return a post with author by ID", async () => {
       // Create a post
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const createdPost = await service.createPost({
         title: "Find Me",
         content: "Content here",
@@ -238,14 +232,13 @@ describe("DemoComponentService - Database Operations", () => {
       })
 
       // Get it by ID
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+
       const foundPost = await service.getPostById(createdPost.id)
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(foundPost.id).toBe(createdPost.id)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(foundPost.title).toBe("Find Me")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       expect(foundPost.author).toBeDefined()
     })
 
@@ -291,7 +284,6 @@ describe("DemoComponentService - Database Operations", () => {
       expect(users[0]).toHaveProperty("posts")
       expect(users[1]).toHaveProperty("posts")
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const johnPosts = users.find((u) => u.name === "John")?.posts
       expect(johnPosts).toHaveLength(2)
     })

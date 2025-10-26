@@ -57,7 +57,7 @@ export default [
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parserOptions: {
-        project: "./tsconfig.json",
+        project: "./tsconfig.eslint.json",
         tsconfigRootDir: baseDir,
         ecmaVersion: "latest",
         sourceType: "module",
