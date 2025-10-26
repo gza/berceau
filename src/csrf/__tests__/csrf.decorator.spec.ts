@@ -10,6 +10,12 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/unbound-method */
+/**
+ * The above eslint-disable comments are required for testing decorator metadata with NestJS's Reflector.
+ * This involves unbound method access and assignments with `any` types, which are necessary for verifying
+ * that the @SkipCsrf decorator sets metadata correctly on methods. These disables should not be removed
+ * unless the test strategy changes.
+ */
 
 import { Reflector } from "@nestjs/core"
 import { SkipCsrf } from "../csrf.decorator"

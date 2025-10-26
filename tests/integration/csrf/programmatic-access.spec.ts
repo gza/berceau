@@ -10,9 +10,12 @@
  * and JavaScript-based form submissions.
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-
+/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unnecessary-type-assertion */
+/**
+ * File-level disables are required due to NestJS/Supertest API limitations with `any` types.
+ * These APIs force the use of type assertions and unsafe arguments in integration tests.
+ * See docs/dev_guides/testing.md for details.
+ */
 import { Test, TestingModule } from "@nestjs/testing"
 import { INestApplication } from "@nestjs/common"
 import request from "supertest"

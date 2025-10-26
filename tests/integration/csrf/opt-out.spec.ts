@@ -10,7 +10,7 @@
  * of CSRF protection while keeping form endpoints protected.
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-argument -- Required because app.getHttpServer() returns `any` type (NestJS API limitation). See https://github.com/nestjs/nest/issues/992 for details. */
 
 import { Test, TestingModule } from "@nestjs/testing"
 import { INestApplication } from "@nestjs/common"

@@ -9,11 +9,11 @@
  * Following TDD approach - these tests are written before implementation.
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/unbound-method */
-/* eslint-disable testing-library/no-node-access */
-/* eslint-disable testing-library/no-container */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */ // Required for mocking context with `any` types in test setup.
+/* eslint-disable @typescript-eslint/no-explicit-any */ // Required for mocking context with `any` types in test setup.
+/* eslint-disable @typescript-eslint/unbound-method */ // Required for accessing unbound methods for Jest mocks.
+/* eslint-disable testing-library/no-node-access */ // Required for testing DOM structure directly with querySelector and node access.
+/* eslint-disable testing-library/no-container */ // Required for testing DOM structure directly with querySelector and container access.
 
 import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/react"

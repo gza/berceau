@@ -17,9 +17,15 @@
  * 4. Multiple concurrent requests → each receives unique valid token
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/**
+ * eslint-disable @typescript-eslint/no-unsafe-member-access,
+ * eslint-disable @typescript-eslint/no-unsafe-argument,
+ * eslint-disable @typescript-eslint/no-unnecessary-type-assertion
+ *
+ * These disables are required due to NestJS and Supertest APIs using `any` types,
+ * which trigger these TypeScript eslint rules in test code. See:
+ * https://github.com/nestjs/nest/issues/992 and Supertest docs for details.
+ */
 
 import { Test, TestingModule } from "@nestjs/testing"
 import { INestApplication } from "@nestjs/common"

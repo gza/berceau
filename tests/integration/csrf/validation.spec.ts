@@ -14,6 +14,11 @@
  * 4. GET/HEAD/OPTIONS endpoint without token → processed normally
  */
 
+/**
+ * The following eslint-disable directives are required due to NestJS/Supertest API limitations.
+ * These APIs return `any` types for request/response objects, making type assertions and
+ * unsafe member access/argument usage necessary for proper integration test handling.
+ */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
