@@ -10,65 +10,14 @@
  * of CSRF protection while keeping form endpoints protected.
  */
 
-// @ts-nocheck - Test controllers use decorators in test context
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 
 import { Test, TestingModule } from "@nestjs/testing"
-import {
-  Controller,
-  Post,
-  Body,
-  Module,
-  INestApplication,
-} from "@nestjs/common"
+import { INestApplication } from "@nestjs/common"
 import request from "supertest"
 import session from "express-session"
 import { AppModule } from "../../../src/app.module"
-import { SkipCsrf } from "../../../src/csrf"
-
-// Test controller with @SkipCsrf() endpoints
-// @ts-expect-error - Test controller for integration testing
-@Controller("test-csrf-opt-out")
-class TestOptOutController {
-  // API endpoint with @SkipCsrf() on method
-  @Post("api/data")
-  @SkipCsrf()
-  createApiData(@Body() data: { name: string }) {
-    return { success: true, data }
-  }
-
-  // Protected endpoint without @SkipCsrf()
-  @Post("protected")
-  createProtectedData(@Body() data: { name: string }) {
-    return { success: true, data }
-  }
-}
-
-// Test controller with @SkipCsrf() on entire class
-// @ts-expect-error - Test controller for integration testing
-@Controller("test-csrf-opt-out-class")
-@SkipCsrf()
-class TestOptOutClassController {
-  // All methods in this class should skip CSRF validation
-  @Post("api/endpoint1")
-  endpoint1(@Body() data: { name: string }) {
-    return { success: true, endpoint: 1, data }
-  }
-
-  @Post("api/endpoint2")
-  endpoint2(@Body() data: { name: string }) {
-    return { success: true, endpoint: 2, data }
-  }
-}
-
-@Module({
-  controllers: [TestOptOutController, TestOptOutClassController],
-})
-class TestOptOutModule {}
+import { TestOptOutModule } from "./fixtures/test-opt-out.module"
 
 describe("CSRF Opt-Out (Integration)", () => {
   let app: INestApplication
@@ -109,8 +58,13 @@ describe("CSRF Opt-Out (Integration)", () => {
         .send({ name: "Test Data" })
 
       expect(response.status).toBe(201)
-      expect(response.body.success).toBe(true)
-      expect(response.body.data.name).toBe("Test Data")
+      expect(
+        (response.body as { success: boolean; data: { name: string } }).success,
+      ).toBe(true)
+      expect(
+        (response.body as { success: boolean; data: { name: string } }).data
+          .name,
+      ).toBe("Test Data")
     })
 
     it("should reject POST to protected endpoint without token", async () => {
@@ -119,7 +73,7 @@ describe("CSRF Opt-Out (Integration)", () => {
         .send({ name: "Protected Data" })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toContain("CSRF")
+      expect((response.body as { message: string }).message).toContain("CSRF")
     })
 
     it("should accept POST to protected endpoint with valid token", async () => {
@@ -130,7 +84,7 @@ describe("CSRF Opt-Out (Integration)", () => {
       const tokenMatch = /<input[^>]*name="_csrf"[^>]*value="([^"]+)"/.exec(
         getResponse.text,
       )
-      const csrfToken = tokenMatch![1]
+      const csrfToken = tokenMatch?.[1]
 
       // POST to protected endpoint with token
       const response = await agent
@@ -138,7 +92,7 @@ describe("CSRF Opt-Out (Integration)", () => {
         .send({ _csrf: csrfToken, name: "Protected with Token" })
 
       expect(response.status).toBe(201)
-      expect(response.body.success).toBe(true)
+      expect((response.body as { success: boolean }).success).toBe(true)
     })
   })
 
@@ -149,8 +103,12 @@ describe("CSRF Opt-Out (Integration)", () => {
         .send({ name: "Endpoint 1 Data" })
 
       expect(response.status).toBe(201)
-      expect(response.body.success).toBe(true)
-      expect(response.body.endpoint).toBe(1)
+      expect(
+        (response.body as { success: boolean; endpoint: number }).success,
+      ).toBe(true)
+      expect(
+        (response.body as { success: boolean; endpoint: number }).endpoint,
+      ).toBe(1)
     })
 
     it("should allow POST to class-level @SkipCsrf() endpoint 2 without token", async () => {
@@ -159,8 +117,12 @@ describe("CSRF Opt-Out (Integration)", () => {
         .send({ name: "Endpoint 2 Data" })
 
       expect(response.status).toBe(201)
-      expect(response.body.success).toBe(true)
-      expect(response.body.endpoint).toBe(2)
+      expect(
+        (response.body as { success: boolean; endpoint: number }).success,
+      ).toBe(true)
+      expect(
+        (response.body as { success: boolean; endpoint: number }).endpoint,
+      ).toBe(2)
     })
   })
 
@@ -177,7 +139,7 @@ describe("CSRF Opt-Out (Integration)", () => {
         })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toContain("CSRF")
+      expect((response.body as { message: string }).message).toContain("CSRF")
     })
 
     it("should accept POST to demo form with valid token", async () => {
@@ -188,7 +150,7 @@ describe("CSRF Opt-Out (Integration)", () => {
       const tokenMatch = /<input[^>]*name="_csrf"[^>]*value="([^"]+)"/.exec(
         getResponse.text,
       )
-      const csrfToken = tokenMatch![1]
+      const csrfToken = tokenMatch?.[1]
 
       // POST with token
       const response = await agent.post("/demo/posts").send({
@@ -212,7 +174,7 @@ describe("CSRF Opt-Out (Integration)", () => {
       const tokenMatch = /<input[^>]*name="_csrf"[^>]*value="([^"]+)"/.exec(
         getResponse.text,
       )
-      const csrfToken = tokenMatch![1]
+      const csrfToken = tokenMatch?.[1]
 
       // Make concurrent requests
       const [optOutResponse, protectedResponse] = await Promise.all([

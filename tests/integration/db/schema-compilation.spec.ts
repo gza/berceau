@@ -23,19 +23,19 @@ describe("Database Schema Compilation Integration", () => {
       expect(fs.existsSync(mainSchemaPath)).toBe(true)
 
       const content = fs.readFileSync(mainSchemaPath, "utf8")
-      
+
       // Verify datasource configuration
-      expect(content).toContain('datasource db')
+      expect(content).toContain("datasource db")
       expect(content).toContain('provider = "postgresql"')
       expect(content).toContain('url      = env("MIGRATION_DATABASE_URL")')
-      
+
       // Verify generator configuration
-      expect(content).toContain('generator client')
+      expect(content).toContain("generator client")
       expect(content).toContain('provider = "prisma-client-js"')
-      
+
       // Verify it's marked as auto-generated
-      expect(content).toContain('auto-generated')
-      expect(content).toContain('DO NOT EDIT MANUALLY')
+      expect(content).toContain("auto-generated")
+      expect(content).toContain("DO NOT EDIT MANUALLY")
     })
 
     it("should have copied demo component schema to central directory", () => {
@@ -49,28 +49,30 @@ describe("Database Schema Compilation Integration", () => {
       expect(fs.existsSync(demoSchemaPath)).toBe(true)
 
       const content = fs.readFileSync(demoSchemaPath, "utf8")
-      
+
       // Verify models are present
-      expect(content).toContain('model DemoUser')
-      expect(content).toContain('model DemoPost')
-      
+      expect(content).toContain("model DemoUser")
+      expect(content).toContain("model DemoPost")
+
       // Verify enum is present
-      expect(content).toContain('enum DemoPostStatus')
-      expect(content).toContain('DRAFT')
-      expect(content).toContain('PUBLISHED')
-      expect(content).toContain('ARCHIVED')
-      
+      expect(content).toContain("enum DemoPostStatus")
+      expect(content).toContain("DRAFT")
+      expect(content).toContain("PUBLISHED")
+      expect(content).toContain("ARCHIVED")
+
       // Verify relationships
-      expect(content).toContain('posts     DemoPost[]')
-      expect(content).toContain('author    DemoUser')
-      expect(content).toContain('@relation(fields: [authorId], references: [id], onDelete: Cascade)')
-      
+      expect(content).toContain("posts     DemoPost[]")
+      expect(content).toContain("author    DemoUser")
+      expect(content).toContain(
+        "@relation(fields: [authorId], references: [id], onDelete: Cascade)",
+      )
+
       // Verify indexes
-      expect(content).toContain('@@index([authorId])')
-      
+      expect(content).toContain("@@index([authorId])")
+
       // Verify it contains ONLY models and enums (no datasource/generator)
-      expect(content).not.toContain('datasource db')
-      expect(content).not.toContain('generator client')
+      expect(content).not.toContain("datasource db")
+      expect(content).not.toContain("generator client")
     })
 
     it("should have generated complete migration directory structure", () => {
@@ -86,7 +88,7 @@ describe("Database Schema Compilation Integration", () => {
       // Check for migration lock file
       const lockFile = path.join(migrationsDir, "migration_lock.toml")
       expect(fs.existsSync(lockFile)).toBe(true)
-      
+
       const lockContent = fs.readFileSync(lockFile, "utf8")
       expect(lockContent).toContain('provider = "postgresql"')
     })
@@ -122,17 +124,17 @@ describe("Database Schema Compilation Integration", () => {
     it("should have DemoPostStatus enum available", async () => {
       // Import enum from generated client
       const { DemoPostStatus } = await import("@prisma/client")
-      
+
       expect(DemoPostStatus).toBeDefined()
       expect(DemoPostStatus.DRAFT).toBe("DRAFT")
       expect(DemoPostStatus.PUBLISHED).toBe("PUBLISHED")
       expect(DemoPostStatus.ARCHIVED).toBe("ARCHIVED")
     })
 
-    it("should support TypeScript type inference for models", async () => {
+    it("should support TypeScript type inference for models", () => {
       // This test verifies that TypeScript types are correctly generated
       // by attempting operations that would fail at compile-time if types were wrong
-      
+
       // Type check will fail at compile time if prisma.demoUser doesn't have correct types
       const userQuery = prisma.demoUser.findMany({
         select: {
@@ -162,8 +164,10 @@ describe("Database Schema Compilation Integration", () => {
   describe("Multi-File Schema Support", () => {
     it("should load all .prisma files from schema directory", () => {
       const schemaDir = path.join(process.cwd(), "prisma", "schema")
-      const files = fs.readdirSync(schemaDir).filter(f => f.endsWith(".prisma"))
-      
+      const files = fs
+        .readdirSync(schemaDir)
+        .filter((f) => f.endsWith(".prisma"))
+
       // Should have at least main.prisma and demo.prisma
       expect(files.length).toBeGreaterThanOrEqual(2)
       expect(files).toContain("main.prisma")
@@ -173,7 +177,7 @@ describe("Database Schema Compilation Integration", () => {
     it("should have prisma.config.ts configured for multi-file schema", () => {
       const configPath = path.join(process.cwd(), "prisma.config.ts")
       expect(fs.existsSync(configPath)).toBe(true)
-      
+
       const content = fs.readFileSync(configPath, "utf8")
       expect(content).toContain("schema: './prisma/schema'")
     })
