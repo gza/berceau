@@ -12,10 +12,11 @@ import {
   Param,
   Body,
   Res,
+  Req,
   Redirect,
   HttpCode,
 } from "@nestjs/common"
-import type { Response } from "express"
+import type { Response, Request } from "express"
 import { renderPage } from "../../ssr/renderPage"
 import { PostListPage } from "./ui/PostListPage"
 import { DemoComponentService } from "./component.service"
@@ -38,12 +39,13 @@ export class DemoController {
    * Display all posts with a form to add new posts
    */
   @Get("/demo/posts")
-  async getPosts(@Res() res: Response) {
+  async getPosts(@Req() req: Request, @Res() res: Response) {
     const posts = await this.demoService.getAllPosts()
 
     const view = renderPage(<PostListPage posts={posts} />, {
       title: "Demo Posts - Database Integration",
       currentPath: "/demo/posts",
+      request: req,
     })
     res.status(200).send(view)
   }

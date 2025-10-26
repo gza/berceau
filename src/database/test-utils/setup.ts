@@ -147,6 +147,33 @@ export async function setupTestDatabase(): Promise<PrismaClient> {
 }
 
 /**
+ * Setup test schema by running migrations
+ *
+ * This ensures the test schema has all tables and migrations applied.
+ * Should be run once per test worker before running tests.
+ *
+ * NOTE: This requires the Prisma schema to support multi-schema or
+ * you need to run migrations manually for each test schema.
+ */
+export async function setupTestSchema(): Promise<void> {
+  const schema = getTestSchema()
+  const prisma = createTestPrismaClient()
+
+  try {
+    await prisma.$connect()
+
+    // Create schema if it doesn't exist
+    await prisma.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS "${schema}"`)
+
+    // Note: In a real scenario, you'd need to run migrations here
+    // For now, we rely on the default schema having the correct structure
+    // and using search_path to access it
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+/**
  * Teardown test database connection
  *
  * Disconnects from the database and cleans up

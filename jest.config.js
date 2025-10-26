@@ -5,11 +5,21 @@ module.exports = {
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
   },
-  collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts"],
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.spec.{ts,tsx}",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/__tests__/**",
+    "!src/**/__mocks__/**",
+    "!src/setupTests.ts",
+  ],
   moduleNameMapper: {
     "\\.(css|less|scss|sass)$": "<rootDir>/src/__mocks__/fileMock.js",
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/src/__mocks__/fileMock.js",
   },
+  // Global setup to create test schemas before running tests
+  globalSetup: "<rootDir>/jest.globalSetup.ts",
   // Simplified configuration with separate test environments
   projects: [
     {
@@ -20,6 +30,8 @@ module.exports = {
         "<rootDir>/src/**/contract/**/?(*.)+(spec|test).ts",
         "<rootDir>/src/**/integration/**/?(*.)+(spec|test).ts",
         "<rootDir>/src/**/*.service.spec.ts",
+        "<rootDir>/src/**/*.guard.spec.ts",
+        "<rootDir>/src/**/*.decorator.spec.ts",
         "<rootDir>/src/components/**/test/**/?(*.)+(spec|test).ts",
         "<rootDir>/tests/integration/**/?(*.)+(spec|test).ts",
       ],
@@ -31,9 +43,7 @@ module.exports = {
         "\\.(gif|ttf|eot|svg|png|jpg|jpeg|webp)$":
           "<rootDir>/src/__mocks__/fileMock.js",
       },
-      // Run database integration tests serially to avoid race conditions
-      // All other tests run in parallel
-      maxWorkers: "50%",
+      // maxWorkers controlled via CLI in package.json (--maxWorkers=$JEST_WORKERS)
     },
     {
       displayName: "react-tests",

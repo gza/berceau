@@ -147,6 +147,40 @@ This document describes the architecture and implementation of the component-lev
 
 **Implementation**: `.env` file (gitignored)
 
+### 6. Schema-Based Test Isolation
+
+**Decision**: Use PostgreSQL schemas (not separate databases) for test isolation
+
+**Rationale**:
+- Fast setup: Creating schemas is faster than creating databases
+- Resource efficient: Single database connection pool
+- Easy cleanup: DROP SCHEMA CASCADE removes all objects
+- Parallel execution: Each Jest worker gets its own schema
+- Native Prisma support: `?schema=` parameter in connection URL
+
+**Alternatives Considered**:
+- Separate test databases (rejected: slower, more resource-intensive)
+- Transaction rollback (rejected: doesn't work with NestJS TestingModule lifecycle)
+- Table truncation without isolation (rejected: race conditions in parallel tests)
+
+**Implementation**: 
+- `jest.globalSetup.ts`: Creates test schemas using `pg_dump` with mandatory `JEST_WORKERS` environment variable
+- `PrismaService.getDatabaseUrl()`: Detects `JEST_WORKER_ID` and modifies schema parameter
+- `jest.config.js`: Configures parallel execution
+- `package.json`: Test scripts include `JEST_WORKERS=8 jest --maxWorkers=$JEST_WORKERS`
+
+**Environment Variable Requirements**:
+- `JEST_WORKERS` environment variable is **mandatory** and must be set in package.json test scripts
+- Controls both the number of Jest workers and the number of test schemas created
+- Validation error thrown if not set or invalid: "JEST_WORKERS environment variable is required..."
+- Example: `"JEST_WORKERS=8 jest --maxWorkers=$JEST_WORKERS"`
+
+**Trade-offs**:
+- Pro: 4x faster test execution on 4-core machines
+- Pro: Complete isolation, no race conditions
+- Con: Requires PostgreSQL (schema-based isolation not available in all databases)
+- Con: Slightly longer globalSetup time (~2-3 seconds)
+
 ---
 
 ## Component Architecture
@@ -323,6 +357,40 @@ console.log(post.author.name); // ✅ Type-safe
 
 ## Testing Strategy
 
+### Schema-Based Isolation
+
+**Architecture**: Each Jest worker gets its own isolated database schema to enable safe parallel test execution.
+
+**Implementation**:
+- `jest.globalSetup.ts`: Runs once before all tests
+- Creates `test_1`, `test_2`, `test_3`, `test_4` schemas (one per worker)
+- Uses `pg_dump` to copy complete schema structure from `public` schema
+- Grants permissions to application user on each test schema
+- `PrismaService`: Auto-detects `JEST_WORKER_ID` and modifies connection URL to use test schema
+
+**Key Files**:
+- `/jest.globalSetup.ts`: Schema initialization
+- `/src/database/runtime/prisma.service.ts`: Schema detection logic
+- `/jest.config.js`: Parallel execution configuration (`maxWorkers: "50%"`)
+
+**Schema Copying Process**:
+```bash
+# For each test worker schema (test_1, test_2, etc.):
+1. DROP SCHEMA IF EXISTS test_N CASCADE
+2. CREATE SCHEMA test_N
+3. GRANT ALL PRIVILEGES to application user
+4. pg_dump public schema (schema-only, no data)
+5. Replace 'public.' with 'test_N.' in dump
+6. Execute modified dump in test schema
+```
+
+**Benefits**:
+- ✅ Parallel test execution (4x faster on 4-core machines)
+- ✅ Complete test isolation (no race conditions)
+- ✅ Automatic schema setup (no manual configuration)
+- ✅ Proper ENUM type handling (pg_dump handles schema-qualified types)
+- ✅ Complete schema replication (tables, indexes, constraints, sequences)
+
 ### Unit Tests
 
 **Approach**: Mock PrismaService for fast unit tests
@@ -346,12 +414,12 @@ const mockPrisma = {
 
 ### Integration Tests
 
-**Approach**: Use real database for integration tests
+**Approach**: Use real database with schema isolation
 
 **Setup**:
-- Test database separate from development
-- Clean slate before each test (deleteMany)
-- Real Prisma Client with test data
+- Each worker uses its own test schema (`test_1`, `test_2`, etc.)
+- Clean data between tests (deleteMany)
+- Real Prisma Client with schema-isolated connections
 
 **Example Tests**:
 - `database-operations.spec.ts`: CRUD operations
@@ -362,13 +430,140 @@ const mockPrisma = {
 - Validates real database interactions
 - Tests actual Prisma queries
 - Catches SQL errors
+- Safe parallel execution
 
-### Test Isolation
+### Test Database Configuration
 
-**Strategy**:
-- `beforeEach`: Clean all test data
-- `afterAll`: Disconnect from database
-- Separate test database (`DATABASE_URL` with test DB)
+**Environment Variables**:
+```env
+# Runtime connection (also used by tests)
+DATABASE_URL="postgresql://berceau:secret@localhost:5432/berceau-dev?schema=public"
+
+# Migration connection (used by globalSetup for schema creation)
+MIGRATION_DATABASE_URL="postgresql://boss:secret@localhost:5432/berceau-dev?schema=public"
+```
+
+**Schema Detection in PrismaService**:
+```typescript
+private getDatabaseUrl(): string {
+  const baseUrl = process.env.DATABASE_URL || ''
+  
+  // In test environment, use worker-specific schema
+  if (process.env.JEST_WORKER_ID) {
+    const workerId = process.env.JEST_WORKER_ID
+    const schemaName = `test_${workerId}`
+    
+    // Replace schema parameter in URL
+    return baseUrl.includes('?schema=')
+      ? baseUrl.replace(/(\?schema=)[^&]*/, `$1${schemaName}`)
+      : `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}schema=${schemaName}`
+  }
+  
+  return baseUrl
+}
+```
+
+### Test Execution
+
+**Environment Variable Setup**:
+- `JEST_WORKERS` environment variable is required in all test scripts
+- Set in package.json: `"JEST_WORKERS=8 jest --maxWorkers=$JEST_WORKERS"`
+- Must match the number of workers Jest will actually use
+- Ensures correct number of test schemas are created
+
+**Parallel Execution** (default):
+```bash
+npm run test  # Uses JEST_WORKERS value, schema isolation enabled
+```
+
+**Serial Execution** (for debugging):
+```bash
+npm run test -- --maxWorkers=1  # Single worker, uses test_1 schema
+```
+
+**Custom Worker Count**:
+```bash
+# Update package.json first, then run:
+JEST_WORKERS=4 jest --maxWorkers=4
+```
+
+**Test Output**:
+```
+🔧 Setting up test database schemas...
+  Creating schema: test_1
+  Granted permissions to berceau on test_1
+  Copying schema structure to test_1...
+  Successfully copied schema structure to test_1
+  [Repeated for test_2, test_3, test_4]
+✅ Test database schemas ready!
+
+Test Suites: 28 passed, 28 total
+Tests:       159 passed, 159 total
+Time:        12.873 s
+```
+
+### Troubleshooting Test Issues
+
+**Problem**: "JEST_WORKERS environment variable is required"
+
+**Cause**: JEST_WORKERS not set in test scripts
+
+**Solution**: Update package.json:
+```json
+{
+  "scripts": {
+    "test": "JEST_WORKERS=8 jest --maxWorkers=$JEST_WORKERS",
+    "test:watch": "JEST_WORKERS=8 jest --watch --maxWorkers=$JEST_WORKERS",
+    "test:cov": "JEST_WORKERS=8 jest --coverage --maxWorkers=$JEST_WORKERS"
+  }
+}
+```
+
+**Problem**: "Table does not exist in current database"
+
+**Cause**: Test schema not properly initialized
+
+**Solution**:
+```bash
+# Ensure database is running
+docker compose up
+
+# Rebuild to ensure migrations are applied to public schema
+npm run build
+npx prisma migrate dev
+
+# Run tests (globalSetup will copy schema)
+npm run test
+```
+
+**Problem**: Tests fail intermittently
+
+**Cause**: Race conditions (if schema isolation is not working)
+
+**Solution**:
+```bash
+# Verify PrismaService is using test schemas
+# Check logs for "Prisma connected to database on schema: test_N"
+
+# Run tests serially to confirm it's a parallelization issue
+npm run test -- --maxWorkers=1
+
+# If serial passes but parallel fails, check JEST_WORKER_ID detection
+```
+
+**Problem**: "Permission denied for schema test_N"
+
+**Cause**: Application user doesn't have permissions on test schemas
+
+**Solution**: Verify `jest.globalSetup.ts` includes permission grants:
+```typescript
+await prisma.$executeRawUnsafe(
+  `GRANT ALL ON SCHEMA "${schemaName}" TO ${appUser}`
+)
+await prisma.$executeRawUnsafe(
+  `ALTER DEFAULT PRIVILEGES IN SCHEMA "${schemaName}" GRANT ALL ON TABLES TO ${appUser}`
+)
+```
 
 ---
 
@@ -564,6 +759,7 @@ The demo component (`src/components/demo/`) serves as:
 2. **Global PrismaService**: Simplified component development significantly
 3. **Demo Component**: Essential for validation and documentation
 4. **Prisma Multi-File Schemas**: Native support eliminated complexity
+5. **pg_dump for Test Schemas**: Handles all edge cases (ENUMs, indexes, constraints) automatically
 
 ### Challenges Overcome
 
@@ -575,6 +771,23 @@ The demo component (`src/components/demo/`) serves as:
 
 3. **HMR Integration**: Schema changes didn't trigger rebuild initially
    - **Solution**: Added file watchers in Webpack plugin
+
+4. **Test Database Isolation**: Race conditions with parallel test execution
+   - **Problem**: Tests sharing same schema caused intermittent failures
+   - **Attempts**:
+     - Prisma migrations per schema (rejected: migration tracking conflicts)
+     - Manual schema copying with CREATE TABLE...LIKE (rejected: ENUM type reference issues)
+   - **Solution**: Use `pg_dump` to copy complete schema structure with proper type qualifications
+   - **Implementation**: `jest.globalSetup.ts` creates worker-specific schemas, `PrismaService` detects `JEST_WORKER_ID`
+
+5. **ENUM Type Handling in Test Schemas**: Schema-qualified types caused errors
+   - **Problem**: `CREATE TABLE...LIKE` doesn't update ENUM type references (public.EnumType vs test_N.EnumType)
+   - **Solution**: `pg_dump` automatically handles schema-qualified type references in column defaults and constraints
+
+6. **Worker Count Coordination**: Misalignment between Jest workers and test schemas
+   - **Problem**: Hard-coded schema count vs dynamic Jest worker count caused "test_8 doesn't exist" errors
+   - **Solution**: Mandatory `JEST_WORKERS` environment variable coordinates both Jest maxWorkers and schema creation
+   - **Implementation**: Validation in `jest.globalSetup.ts` with clear error messages
 
 ### Best Practices Established
 

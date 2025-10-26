@@ -4,9 +4,13 @@
  * Form for creating new posts
  */
 
+import { CsrfToken } from "../../../csrf"
+
 export function PostForm() {
   return (
     <form method="POST" action="/demo/posts" className="demo-post-form">
+      {/* CSRF Protection - automatically includes token in form submission */}
+      <CsrfToken />
       <div className="demo-form-group">
         <label htmlFor="title">
           Post Title <span className="demo-required">*</span>

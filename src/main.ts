@@ -1,6 +1,7 @@
 import { Logger } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
 import { NestExpressApplication } from "@nestjs/platform-express"
+import session from "express-session"
 import { join } from "path"
 import { AppModule } from "./app.module"
 
@@ -11,6 +12,23 @@ declare const module: any
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
   const logger = new Logger("Bootstrap")
+
+  // Configure session middleware for CSRF protection
+  app.use(
+    session({
+      secret:
+        process.env.SESSION_SECRET ||
+        "fallback-dev-secret-change-in-production",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    }),
+  )
 
   // Serve static assets from dist/assets/ at /assets/ URL
   app.useStaticAssets(join(__dirname, "assets"), {

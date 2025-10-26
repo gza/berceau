@@ -430,9 +430,48 @@ async createPostWithAuthor(data: {
 
 ## Testing with the Database
 
+### Test Isolation Strategy
+
+**Schema-Based Isolation**:
+- Each Jest worker gets its own isolated schema (`test_1`, `test_2`, etc.)
+- `jest.globalSetup.ts` creates test schemas before all tests run
+- `PrismaService` auto-detects `JEST_WORKER_ID` and uses the appropriate schema
+- Tests can run in parallel without conflicts or race conditions
+
+**Environment Variable Configuration**:
+- `JEST_WORKERS` environment variable is **required** and controls both Jest worker count and test schema count
+- Set in package.json test scripts: `"JEST_WORKERS=8 jest --maxWorkers=$JEST_WORKERS"`
+- Ensures the number of test schemas matches the actual Jest worker count
+- Validation error if `JEST_WORKERS` is not set or invalid
+
+**Schema Creation Process**:
+- Uses `pg_dump` to copy complete schema structure from `public` schema
+- Handles ENUMs, indexes, constraints, and sequences automatically
+- Grants proper permissions to application user on each test schema
+- More reliable than manual schema copying or Prisma migrations
+
+**Per-Test Cleanup**:
+- `beforeEach`: Use `deleteMany()` to clean tables in your worker's schema
+- `afterAll`: Disconnect from database
+- No need to drop/recreate schemas (handled by globalSetup)
+
+**Running Tests**:
+```bash
+# Parallel execution (default, uses schema isolation)
+npm run test
+
+# Serial execution (if needed for debugging)
+npm run test -- --maxWorkers=1
+
+# Custom worker count (update JEST_WORKERS in package.json accordingly)
+JEST_WORKERS=4 jest --maxWorkers=4
+```
+
+---
+
 ### Integration Tests
 
-Test with real database operations:
+Test with real database operations using the isolated test schema:
 
 ```typescript
 // src/components/blog/test/blog.service.spec.ts
@@ -455,14 +494,14 @@ describe('BlogService - Integration', () => {
   });
 
   afterAll(async () => {
-    // Clean up
+    // Clean up test data
     await prisma.post.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.$disconnect();
   });
 
   beforeEach(async () => {
-    // Clean slate for each test
+    // Clean slate for each test (within this worker's schema)
     await prisma.post.deleteMany({});
     await prisma.user.deleteMany({});
   });
@@ -484,6 +523,12 @@ describe('BlogService - Integration', () => {
   });
 });
 ```
+
+**Important Notes**:
+- Each test worker has its own isolated schema
+- `PrismaService` automatically connects to the correct schema based on `JEST_WORKER_ID`
+- No need to manually configure schema isolation in your tests
+- Use `deleteMany()` in `beforeEach` to ensure clean state between tests
 
 ### Unit Tests (Mocking)
 
@@ -639,6 +684,48 @@ npx prisma generate
 1. Add explicit return types to your methods
 2. Use `eslint-disable` comments for Prisma operations
 3. Cast to proper types when needed
+
+### Test Issues
+
+**Problem**: "JEST_WORKERS environment variable is required"
+
+**Cause**: The `JEST_WORKERS` environment variable is not set in test scripts
+
+**Solution**: Update your package.json test scripts to include `JEST_WORKERS`:
+```json
+{
+  "scripts": {
+    "test": "JEST_WORKERS=8 jest --maxWorkers=$JEST_WORKERS",
+    "test:watch": "JEST_WORKERS=8 jest --watch --maxWorkers=$JEST_WORKERS",
+    "test:cov": "JEST_WORKERS=8 jest --coverage --maxWorkers=$JEST_WORKERS"
+  }
+}
+```
+
+The number should match your desired parallel worker count (typically 50-75% of CPU cores).
+
+**Problem**: Tests fail intermittently with "relation does not exist"
+
+**Cause**: Test schema not properly initialized or race conditions
+
+**Solution**:
+```bash
+# Ensure database is running
+docker compose up
+
+# Rebuild to ensure migrations are applied to public schema
+npm run build
+npx prisma migrate dev
+
+# Run tests (globalSetup will copy schema)
+npm run test
+```
+
+**Problem**: "Permission denied for schema test_N"
+
+**Cause**: Application user doesn't have permissions on test schemas
+
+**Solution**: Verify `jest.globalSetup.ts` includes permission grants and uses the correct application user extracted from `DATABASE_URL`.
 
 ---
 
