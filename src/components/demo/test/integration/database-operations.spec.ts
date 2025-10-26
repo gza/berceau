@@ -21,15 +21,13 @@ describe("DemoComponentService - Database Operations", () => {
     service = moduleRef.get<DemoComponentService>(DemoComponentService)
     prisma = moduleRef.get<PrismaService>(PrismaService)
 
-    // Connect to database
+    // Connect to database (PrismaService auto-handles schema isolation)
     await prisma.$connect()
   })
 
   afterAll(async () => {
     // Clean up test data
-
     await prisma.demoPost.deleteMany({})
-
     await prisma.demoUser.deleteMany({})
 
     // Disconnect

@@ -10,6 +10,8 @@ module.exports = {
     "\\.(css|less|scss|sass)$": "<rootDir>/src/__mocks__/fileMock.js",
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/src/__mocks__/fileMock.js",
   },
+  // Global setup to create test schemas before running tests
+  globalSetup: "<rootDir>/jest.globalSetup.ts",
   // Simplified configuration with separate test environments
   projects: [
     {
@@ -31,9 +33,7 @@ module.exports = {
         "\\.(gif|ttf|eot|svg|png|jpg|jpeg|webp)$":
           "<rootDir>/src/__mocks__/fileMock.js",
       },
-      // Run database integration tests serially to avoid race conditions
-      // All other tests run in parallel
-      maxWorkers: "50%",
+      // maxWorkers controlled via CLI in package.json (--maxWorkers=$JEST_WORKERS)
     },
     {
       displayName: "react-tests",
