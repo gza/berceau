@@ -22,6 +22,8 @@ module.exports = {
         "<rootDir>/src/**/contract/**/?(*.)+(spec|test).ts",
         "<rootDir>/src/**/integration/**/?(*.)+(spec|test).ts",
         "<rootDir>/src/**/*.service.spec.ts",
+        "<rootDir>/src/**/*.guard.spec.ts",
+        "<rootDir>/src/**/*.decorator.spec.ts",
         "<rootDir>/src/components/**/test/**/?(*.)+(spec|test).ts",
         "<rootDir>/tests/integration/**/?(*.)+(spec|test).ts",
       ],
