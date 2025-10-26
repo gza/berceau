@@ -5,7 +5,6 @@ import { CoreModule } from "./systemComponents/core/core.module"
 import { GeneratedComponentsModule } from "./components.generated/generated-components.module"
 import { CsrfModule } from "./csrf/csrf.module"
 import { DatabaseModule } from "./database/runtime/database.module"
-import { BenchmarkModule } from "./components/benchmark/benchmark.module"
 
 @Module({
   imports: [
@@ -16,8 +15,6 @@ import { BenchmarkModule } from "./components/benchmark/benchmark.module"
     // System modules (specific routes first)
     CoreModule,
     AboutModule,
-    // Benchmark endpoints (for performance testing)
-    BenchmarkModule,
     // Dynamically discovered feature modules
     GeneratedComponentsModule,
     // Error handler with wildcard (must be last)
