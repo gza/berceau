@@ -1,16 +1,16 @@
 <!--
 Sync Impact Report:
-- Version change: 1.4.0 → 1.5.0
-- List of modified principles: None
+- Version change: 1.6.0 → 1.7.0
+- Modified principles: VI. Simplicity and Minimalism (clarified and made enforceable)
 - Added sections: None
 - Removed sections: None
 - Templates requiring updates:
-  - .specify/templates/plan-template.md (✅ updated)
-  - .github/prompts/speckit.tasks.prompt.md (✅ updated)
-  - .github/prompts/speckit.constitution.prompt.md (✅ updated)
+  - .specify/templates/plan-template.md (✅ updated: added simplicity checks under Constitution Check)
+  - .specify/templates/spec-template.md (✅ reviewed, no changes required)
+  - .specify/templates/tasks-template.md (✅ reviewed, no changes required)
+  - .specify/templates/commands/* (N/A: folder not present)
   - README.md (✅ reviewed, no changes required)
-- Follow-up TODOs:
-  - None
+- Follow-up TODOs: None
 -->
 # Web Admin Platform Constitution
 
@@ -31,6 +31,16 @@ All new features and bug fixes MUST be accompanied by a comprehensive suite of t
 ### V. Security by Design
 All development MUST consider and mitigate threats outlined in the OWASP Top 10. Features must be designed and implemented with security as a primary consideration, and code should be reviewed for potential vulnerabilities before deployment.
 
+### VI. Simplicity and Minimalism
+Solutions MUST be the simplest that satisfy the requirement.
+
+- Avoid over-engineering and non-essential features; introduce new abstractions only when
+  justified by repeated, concrete need.
+- Any new dependency MUST include a brief cost/benefit and a removal/rollback plan.
+- Do not add cross-cutting layers or global infrastructure without plan.md justification.
+- Each plan.md MUST include a "Why not simpler?" note; any exceptions MUST be logged in
+  the "Complexity Tracking" table.
+
 ## Development Workflow
 
 All new features and bug fixes MUST be developed in a separate branch and submitted as a pull request. Pull requests MUST be reviewed and approved by at least one other developer before being merged into the main branch.
@@ -49,4 +59,4 @@ Versioning & Compliance:
   MUST conduct a compliance review at least once per minor release (or quarterly),
   logging any justified exceptions in feature plans under "Complexity Tracking".
 
-**Version**: 1.5.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-10-15
+**Version**: 1.7.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-10-27
