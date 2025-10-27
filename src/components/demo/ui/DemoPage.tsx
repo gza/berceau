@@ -2,6 +2,8 @@
  * Demo Page Component
  */
 
+import { MyIcon } from "./MyIcon"
+
 export interface DemoPageProps {
   title: string
 }
@@ -38,6 +40,17 @@ export function DemoPage({ title }: DemoPageProps) {
             <code>ui/DemoPage.tsx</code> - This React component
           </li>
         </ul>
+      </section>
+
+      <section>
+        <h2>Interactive Icon</h2>
+        <p>Click the icon below to see a client-side interaction:</p>
+        <MyIcon message="Hello from the Demo Page!" />
+        <h2>Post List Demo</h2>
+        <p>
+          You can view, create, and delete demo posts by navigating to the{" "}
+          <a href="/demo/posts">posts list page</a>.
+        </p>
       </section>
     </div>
   )

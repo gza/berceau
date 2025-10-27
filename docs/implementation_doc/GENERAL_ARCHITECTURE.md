@@ -3,7 +3,7 @@
 Project: Berceau
 Type: NestJS + TSX Server‑Side Rendering (SSR)
 
-This document provides a focused overview of the unique architectural aspects of Berceau. It intentionally avoids duplicating the Quick Start, scripts, and basic structure already covered in `README.md`, and skips deep HMR/asset specifics documented in `docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md` and the UI assets docs (`docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md` and `docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md`).
+This document provides a focused overview of the unique architectural aspects of Berceau. It intentionally avoids duplicating the Quick Start, scripts, and basic structure already covered in `README.md`, and skips deep HMR/asset specifics documented in `docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md` and the UI assets/docs (`docs/dev_guides/UI_DEV_GUIDE.md` and `docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md`).
 
 ## Goals and Core Ideas
 
@@ -163,4 +163,4 @@ export function AboutPage() {
 References:
 - `README.md` for setup, scripts, and quick start.
 - `docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md` for HMR mechanics.
-- `docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md` and `docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md` for asset handling.
+- `docs/dev_guides/UI_DEV_GUIDE.md` and `docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md` for asset handling.

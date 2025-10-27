@@ -110,7 +110,7 @@ Comprehensive documentation is available in the `docs/` directory:
 ### End-developer Guides
 
 - **[Database Integration Guide](docs/dev_guides/DATABASE_INTEGRATION_GUIDE.md)** - Complete guide to adding database functionality to components
-- **[UI Assets Management Guide](docs/dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md)** - Complete guide to asset management (CSS, images, SVG)
+ - **[UI Development Guide](docs/dev_guides/UI_DEV_GUIDE.md)** - Complete UI development guide (SSR patterns, assets, forms)
 - **[Components Discovery Guide](docs/dev_guides/COMPONENTS_DISCOVERY_GUIDE.md)** - How to use the components discovery system
 
 ### Architecture & Design

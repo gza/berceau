@@ -4,7 +4,7 @@
 
 **Related docs:**
 - [Implementation Details](../implementation_doc/COMPONENTS_DISCOVERY_IMPLEMENTATION.md) - How the discovery system works internally
-- [UI Assets Management Guide](../dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md) - How to use images, SVG, and CSS in features
+ - [UI Development Guide](../dev_guides/UI_DEV_GUIDE.md) - How to build UI in features (SSR, assets, forms)
 - [Hot Reload Implementation](../implementation_doc/HOT_RELOAD_IMPLEMENTATION.md) - How HMR works with component discovery
 
 ## Overview
@@ -172,7 +172,7 @@ export function MyFeaturePage() {
 
 Assets are automatically copied to `dist/assets/components/my-feature/ui/` and served at `/assets/components/my-feature/ui/`.
 
-**See [UI Assets Management Guide](../dev_guides/UI_ASSETS_MANAGEMENT_GUIDE.md) for more details.**
+**See [UI Development Guide](../dev_guides/UI_DEV_GUIDE.md) for more details.**
 
 ## Multiple Routes
 

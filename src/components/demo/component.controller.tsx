@@ -20,6 +20,7 @@ import type { Response, Request } from "express"
 import { renderPage } from "../../ssr/renderPage"
 import { PostListPage } from "./ui/PostListPage"
 import { DemoComponentService } from "./component.service"
+import { DemoPage } from "./ui/DemoPage"
 
 @Controller()
 export class DemoController {
@@ -29,9 +30,13 @@ export class DemoController {
    * Legacy demo route - redirects to posts list
    */
   @Get("/demo")
-  @Redirect("/demo/posts", 302)
   demo() {
     // Redirect to the new posts list page
+    const view = renderPage(<DemoPage title="Demo Component" />, {
+      title: "Demo Component",
+      currentPath: "/demo",
+    })
+    return view
   }
 
   /**

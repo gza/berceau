@@ -4,7 +4,7 @@
  * Form for creating new posts
  */
 
-import { CsrfToken } from "../../../csrf"
+import { CsrfToken } from "src/csrf/csrf-token.component"
 
 export function PostForm() {
   return (
