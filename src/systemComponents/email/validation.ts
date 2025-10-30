@@ -96,12 +96,6 @@ export function validateEmailAddresses(
 
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i]
-    if (!email || typeof email !== "string") {
-      return {
-        valid: false,
-        error: `Email address at index ${i} is not a valid string`,
-      }
-    }
     const result = validateEmailAddress(email)
     if (!result.valid) {
       return {
