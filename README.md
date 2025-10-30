@@ -20,6 +20,7 @@ Berceau provides ~~a production-ready~~ an ⚠️ experimental ⚠️ foundation
 - **JSX Server-Side Rendering** with React's `renderToString`
 - **pluggable components**: domain-driven structure, each component owns its controllers, UI, and tests
 - **Postgres Database Access**: Type-safe database access with Prisma, client generation by HMR
+- **Outgoing Email**: Send transactional emails with JSX templates via SMTP
 
 ## Future plans
 
@@ -110,14 +111,16 @@ Comprehensive documentation is available in the `docs/` directory:
 ### End-developer Guides
 
 - **[Database Integration Guide](docs/dev_guides/DATABASE_INTEGRATION_GUIDE.md)** - Complete guide to adding database functionality to components
- - **[UI Development Guide](docs/dev_guides/UI_DEV_GUIDE.md)** - Complete UI development guide (SSR patterns, assets, forms)
+- **[UI Development Guide](docs/dev_guides/UI_DEV_GUIDE.md)** - Complete UI development guide (SSR patterns, assets, forms)
 - **[Components Discovery Guide](docs/dev_guides/COMPONENTS_DISCOVERY_GUIDE.md)** - How to use the components discovery system
+- **[Outgoing Email Guide](docs/dev_guides/OUTGOING_EMAIL_GUIDE.md)** - Send transactional emails with JSX templates
 
 ### Architecture & Design
 - **[General Architecture](docs/implementation_doc/GENERAL_ARCHITECTURE.md)** - Overview of the project structure and design decisions
 - **[Database Integration Implementation](docs/implementation_doc/DATABASE_INTEGRATION_IMPLEMENTATION.md)** - Database architecture and design decisions
 - **[Hot Reload Implementation](docs/implementation_doc/HOT_RELOAD_IMPLEMENTATION.md)** - Webpack HMR setup and configuration
 - **[UI Assets Management Implementation](docs/implementation_doc/UI_ASSETS_MANAGEMENT_IMPLEMENTATION.md)** - Technical implementation details (webpack, serving)
+- **[Outgoing Email Implementation](docs/implementation_doc/OUTGOING_EMAIL_IMPLEMENTATION.md)** - Email service architecture and design decisions
 
 ## 🛠️ Available Scripts
 

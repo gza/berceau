@@ -1,6 +1,6 @@
 ---
 description: Additional prompts for use with specify.
-applyTo: "specs/**/plan.md"
+applyTo: "**/plan.md"
 ---
 
 * Consider **that nobody reads the logs** when everything is working. Developers or operators only reads the logs to understand a problem. So when a problem impacts a functionality it **must stop immediately and loudly**.

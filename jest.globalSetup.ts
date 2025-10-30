@@ -7,7 +7,67 @@
 
 import { PrismaClient } from "@prisma/client"
 
+/**
+ * Check if Mailpit is available for email testing
+ */
+async function verifyMailpitAvailable(): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log("📧 Verifying Mailpit is available...")
+
+  const mailpitUrl = "http://localhost:8025/api/v1/info"
+  const maxRetries = 5
+  const retryDelay = 1000 // 1 second
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 2000)
+
+      const response = await fetch(mailpitUrl, {
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+
+      if (response.ok) {
+        // eslint-disable-next-line no-console
+        console.log("✅ Mailpit is available")
+        return
+      }
+
+      // eslint-disable-next-line no-console
+      console.log(
+        `  Attempt ${attempt}/${maxRetries}: Mailpit returned status ${response.status}`,
+      )
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error"
+      // eslint-disable-next-line no-console
+      console.log(
+        `  Attempt ${attempt}/${maxRetries}: Cannot reach Mailpit - ${errorMessage}`,
+      )
+    }
+
+    if (attempt < maxRetries) {
+      // eslint-disable-next-line no-console
+      console.log(`  Waiting ${retryDelay}ms before retry...`)
+      await new Promise((resolve) => setTimeout(resolve, retryDelay))
+    }
+  }
+
+  throw new Error(
+    "\n❌ Mailpit is not available!\n\n" +
+      "Email tests require Mailpit to be running on http://localhost:8025.\n" +
+      "Start Mailpit with: docker compose up mailpit\n\n" +
+      "Or start all services: docker compose up\n",
+  )
+}
+
 export default async function globalSetup() {
+  // Verify Mailpit is running before proceeding
+  await verifyMailpitAvailable()
+
+  // eslint-disable-next-line no-console
   console.log("🔧 Setting up test database schemas...")
 
   // Read number of workers from JEST_WORKERS env var (set in package.json)

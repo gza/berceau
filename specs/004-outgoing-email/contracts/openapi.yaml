@@ -1,0 +1,4 @@
+## No HTTP API exposed
+# This feature uses an internal JS/TS EmailService API only.
+# There is no REST endpoint. See the TypeScript contract:
+#   specs/004-outgoing-email/contracts/email-service.md
