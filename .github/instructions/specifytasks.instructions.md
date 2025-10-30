@@ -1,6 +1,6 @@
 ---
 description: Additional prompts for use with specify.
-applyTo: "specs/**/tasks.md"
+applyTo: "**/tasks.md"
 ---
 
 * Always update and or create end-developer guides (`docs/dev_guides`) when adding new features or changing existing ones.

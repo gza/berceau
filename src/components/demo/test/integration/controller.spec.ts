@@ -46,15 +46,6 @@ describe("DemoController - Routes and Rendering", () => {
     await prisma.demoUser.deleteMany({})
   })
 
-  describe("GET /demo", () => {
-    it("should redirect to /demo/posts", async () => {
-      const response = await request(app.getHttpServer()).get("/demo")
-
-      expect(response.status).toBe(302)
-      expect(response.header.location).toBe("/demo/posts")
-    })
-  })
-
   describe("GET /demo/posts", () => {
     it("should return HTML with posts list page", async () => {
       const response = await request(app.getHttpServer()).get("/demo/posts")

@@ -200,6 +200,6 @@ export async function runInTransaction<T>(
   testFn: (prisma: PrismaClient) => Promise<T>,
 ): Promise<T> {
   return await prisma.$transaction(async (tx) => {
-    return await testFn(tx as PrismaClient)
+    return await testFn(tx)
   })
 }

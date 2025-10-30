@@ -5,6 +5,7 @@ import { CoreModule } from "./systemComponents/core/core.module"
 import { GeneratedComponentsModule } from "./components.generated/generated-components.module"
 import { CsrfModule } from "./csrf/csrf.module"
 import { DatabaseModule } from "./database/runtime/database.module"
+import { EmailModule } from "./email/email.module"
 
 @Module({
   imports: [
@@ -12,6 +13,8 @@ import { DatabaseModule } from "./database/runtime/database.module"
     DatabaseModule,
     // Global CSRF protection module
     CsrfModule.forRoot(),
+    // Email module
+    EmailModule,
     // System modules (specific routes first)
     CoreModule,
     AboutModule,

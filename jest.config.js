@@ -32,8 +32,10 @@ module.exports = {
         "<rootDir>/src/**/*.service.spec.ts",
         "<rootDir>/src/**/*.guard.spec.ts",
         "<rootDir>/src/**/*.decorator.spec.ts",
+        "<rootDir>/src/email/**/*.spec.ts",
         "<rootDir>/src/components/**/test/**/?(*.)+(spec|test).ts",
         "<rootDir>/tests/integration/**/?(*.)+(spec|test).ts",
+        "<rootDir>/tests/unit/**/?(*.)+(spec|test).ts",
       ],
       transform: {
         "^.+\\.(ts)$": "ts-jest",
