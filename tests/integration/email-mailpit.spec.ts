@@ -17,15 +17,17 @@ import React from "react"
 import { EmailModule } from "../../src/email/email.module"
 import { EmailService } from "../../src/email/email.service"
 import {
-  waitForEmailToRecipient,
   getMessageDetail,
-  clearMailbox,
   assertMailpitAvailable,
+  generateTestToken,
+  buildSubject,
+  waitForEmailBySubjectContains,
 } from "../helpers/email-test-utils"
 
 describe("Mailpit Capture (Integration)", () => {
   let app: INestApplication
   let emailService: EmailService
+  const TOKEN = generateTestToken()
 
   beforeAll(async () => {
     // Ensure Mailpit is running before tests
@@ -45,18 +47,15 @@ describe("Mailpit Capture (Integration)", () => {
     await app.close()
   })
 
-  beforeEach(async () => {
-    // Clear Mailpit inbox before each test
-    await clearMailbox()
-  })
-
   describe("email capture", () => {
     it("should capture email sent to Mailpit", async () => {
+      const subject = buildSubject("Test Email for Mailpit Capture", TOKEN)
+
       // Send email via EmailService
       const result = await emailService.send({
         from: "test@example.com",
         to: ["recipient@example.com"],
-        subject: "Test Email for Mailpit Capture",
+        subject,
         body: React.createElement("div", null, "This is a test email."),
       })
 
@@ -66,13 +65,14 @@ describe("Mailpit Capture (Integration)", () => {
         throw new Error("Email send failed")
       }
 
-      // Wait for email to appear in Mailpit
-      const message = await waitForEmailToRecipient("recipient@example.com")
+      // Wait for email using tokenized subject
+      const message = await waitForEmailBySubjectContains(TOKEN)
 
       // Verify message summary
       expect(message.To[0].Address).toBe("recipient@example.com")
       expect(message.From.Address).toBe("test@example.com")
-      expect(message.Subject).toBe("Test Email for Mailpit Capture")
+      expect(message.Subject).toContain("Test Email for Mailpit Capture")
+      expect(message.Subject).toContain(TOKEN)
 
       // Get full message detail
       const detail = await getMessageDetail(message.ID)
@@ -88,18 +88,20 @@ describe("Mailpit Capture (Integration)", () => {
         "user3@example.com",
       ]
 
+      const subject = buildSubject("Multi-Recipient Test", TOKEN)
+
       // Send email to multiple recipients
       const result = await emailService.send({
         from: "sender@example.com",
         to: recipients,
-        subject: "Multi-Recipient Test",
+        subject,
         body: React.createElement("p", null, "Sent to multiple recipients"),
       })
 
       expect(result.ok).toBe(true)
 
-      // Wait for first recipient's email
-      const message = await waitForEmailToRecipient(recipients[0])
+      // Wait for email using tokenized subject
+      const message = await waitForEmailBySubjectContains(TOKEN)
 
       // Verify all recipients are in the message
       const recipientAddresses = message.To.map((addr) => addr.Address)
@@ -116,17 +118,19 @@ describe("Mailpit Capture (Integration)", () => {
         React.createElement("a", { href: "https://example.com" }, "Click here"),
       )
 
+      const subject = buildSubject("JSX Content Test", TOKEN)
+
       const result = await emailService.send({
         from: "noreply@example.com",
         to: ["user@example.com"],
-        subject: "JSX Content Test",
+        subject,
         body: jsxContent,
       })
 
       expect(result.ok).toBe(true)
 
-      // Wait for email
-      const message = await waitForEmailToRecipient("user@example.com")
+      // Wait for email using tokenized subject
+      const message = await waitForEmailBySubjectContains(TOKEN)
       const detail = await getMessageDetail(message.ID)
 
       // Verify JSX was rendered to HTML
@@ -152,37 +156,42 @@ describe("Mailpit Capture (Integration)", () => {
         ),
       )
 
+      const subject = buildSubject(`Order ${orderNumber} Confirmation`, TOKEN)
+
       const result = await emailService.send({
         from: "orders@example.com",
         to: ["alice@example.com"],
-        subject: `Order ${orderNumber} Confirmation`,
+        subject,
         body: jsxContent,
       })
 
       expect(result.ok).toBe(true)
 
-      const message = await waitForEmailToRecipient("alice@example.com")
+      const message = await waitForEmailBySubjectContains(TOKEN)
       const detail = await getMessageDetail(message.ID)
 
       // Verify props were interpolated
       expect(detail.HTML).toContain("Hello, Alice!")
       expect(detail.HTML).toContain("Your order 12345 is confirmed.")
-      expect(detail.Subject).toBe("Order 12345 Confirmation")
+      expect(detail.Subject).toContain("Order 12345 Confirmation")
+      expect(detail.Subject).toContain(TOKEN)
     })
   })
 
   describe("Mailpit API integration", () => {
     it("should retrieve message detail via Mailpit API", async () => {
+      const subject = buildSubject("API Retrieval Test", TOKEN)
+
       // Send test email
       await emailService.send({
         from: "api-test@example.com",
         to: ["recipient@example.com"],
-        subject: "API Retrieval Test",
+        subject,
         body: React.createElement("p", null, "Testing API retrieval"),
       })
 
-      // Wait for email
-      const message = await waitForEmailToRecipient("recipient@example.com")
+      // Wait for email using tokenized subject
+      const message = await waitForEmailBySubjectContains(TOKEN)
 
       // Get message detail via API
       const detail = await getMessageDetail(message.ID)
@@ -192,39 +201,40 @@ describe("Mailpit Capture (Integration)", () => {
       expect(detail.MessageID).toBeTruthy()
       expect(detail.From.Address).toBe("api-test@example.com")
       expect(detail.To[0].Address).toBe("recipient@example.com")
-      expect(detail.Subject).toBe("API Retrieval Test")
+      expect(detail.Subject).toContain("API Retrieval Test")
+      expect(detail.Subject).toContain(TOKEN)
       expect(detail.HTML).toBeTruthy()
       expect(detail.Text).toBeTruthy()
     })
 
     it("should handle consecutive emails correctly", async () => {
-      // Send multiple emails in sequence
+      // Send multiple tokenized emails in sequence
       const emailCount = 3
 
       for (let i = 0; i < emailCount; i++) {
         await emailService.send({
           from: "batch@example.com",
           to: ["recipient@example.com"],
-          subject: `Email ${i + 1}`,
+          subject: buildSubject(`Email ${i + 1}`, TOKEN),
           body: React.createElement("p", null, `This is email number ${i + 1}`),
         })
       }
 
-      // Wait for last email (ensures all are sent)
-      await waitForEmailToRecipient("recipient@example.com", {
-        timeoutMs: 10000,
-      })
+      // Wait for first email (ensures at least one is sent)
+      await waitForEmailBySubjectContains(TOKEN, { timeoutMs: 10000 })
 
-      // Note: Mailpit stores all messages, but we don't verify count
-      // since clearMailbox() is called before each test
+      // All tokenized emails should be findable
+      // (No global count verification - tokens isolate this test from others)
     })
   })
 
   describe("error handling", () => {
     it("should timeout if email never arrives", async () => {
-      // Don't send any email, just wait
+      // Wait for non-existent token (no email sent with this token)
+      const fakeToken = generateTestToken()
+      
       await expect(
-        waitForEmailToRecipient("nonexistent@example.com", {
+        waitForEmailBySubjectContains(fakeToken, {
           timeoutMs: 1000,
         }),
       ).rejects.toThrow(/Email not received within/)

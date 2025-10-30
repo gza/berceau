@@ -19,15 +19,19 @@ import { EmailModule } from "../../src/email/email.module"
 import { EmailService } from "../../src/email/email.service"
 import { createMailpitClient } from "../../src/email/testing/mailpit-client"
 import {
-  clearMailbox,
   verifyEmailContent,
   assertMailpitAvailable,
+  generateTestToken,
+  buildSubject,
+  waitForEmailBySubjectContains,
+  findMessagesBySubjectContains,
 } from "../helpers/email-test-utils"
 
 describe("Mailpit API (Integration)", () => {
   let app: INestApplication
   let emailService: EmailService
   const mailpitClient = createMailpitClient()
+  const TOKEN = generateTestToken()
 
   beforeAll(async () => {
     // Ensure Mailpit is running before tests
@@ -47,50 +51,48 @@ describe("Mailpit API (Integration)", () => {
     await app.close()
   })
 
-  beforeEach(async () => {
-    // Clear Mailpit inbox before each test and wait for it to be empty
-    await clearMailbox()
-    // Wait a bit longer to ensure mailbox is actually cleared
-    await new Promise((resolve) => setTimeout(resolve, 500))
-  })
-
   describe("message retrieval", () => {
     it("should list all messages", async () => {
-      // Send test emails
+      // Send test emails with tokenized subjects
       await emailService.send({
         from: "sender1@example.com",
         to: ["recipient1@example.com"],
-        subject: "Message 1",
+        subject: buildSubject("Message 1", TOKEN),
         body: React.createElement("p", null, "First message"),
       })
 
       await emailService.send({
         from: "sender2@example.com",
         to: ["recipient2@example.com"],
-        subject: "Message 2",
+        subject: buildSubject("Message 2", TOKEN),
         body: React.createElement("p", null, "Second message"),
       })
 
-      // Wait for messages to be captured (longer wait to ensure both are captured)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Wait for both messages using token-based search
+      await waitForEmailBySubjectContains(TOKEN)
+      await new Promise((resolve) => setTimeout(resolve, 500)) // Extra buffer for second
 
-      // List messages
-      const messages = await mailpitClient.listMessages()
+      // Find tokenized messages
+      const messages = await findMessagesBySubjectContains(TOKEN)
 
       // Verify both messages are present
       expect(messages.length).toBeGreaterThanOrEqual(2)
 
       const subjects = messages.map((msg) => msg.Subject)
-      expect(subjects).toContain("Message 1")
-      expect(subjects).toContain("Message 2")
+      expect(
+        subjects.some((s) => s.includes("Message 1") && s.includes(TOKEN)),
+      ).toBe(true)
+      expect(
+        subjects.some((s) => s.includes("Message 2") && s.includes(TOKEN)),
+      ).toBe(true)
     })
 
     it("should get message detail by ID", async () => {
-      // Send test email
+      // Send test email with tokenized subject
       await emailService.send({
         from: "detail-test@example.com",
         to: ["recipient@example.com"],
-        subject: "Detail Test",
+        subject: buildSubject("Detail Test", TOKEN),
         body: React.createElement(
           "div",
           null,
@@ -99,19 +101,8 @@ describe("Mailpit API (Integration)", () => {
         ),
       })
 
-      // Wait for message (longer wait to ensure it's captured)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Get message from list
-      const messages = await mailpitClient.listMessages()
-      const messageSummary = messages.find(
-        (msg) => msg.Subject === "Detail Test",
-      )
-      expect(messageSummary).toBeDefined()
-
-      if (!messageSummary) {
-        throw new Error("Message not found")
-      }
+      // Wait for message using token-based wait
+      const messageSummary = await waitForEmailBySubjectContains(TOKEN)
 
       // Get full message detail
       const detail = await mailpitClient.getMessage(messageSummary.ID)
@@ -120,7 +111,8 @@ describe("Mailpit API (Integration)", () => {
       expect(detail.ID).toBe(messageSummary.ID)
       expect(detail.From.Address).toBe("detail-test@example.com")
       expect(detail.To[0].Address).toBe("recipient@example.com")
-      expect(detail.Subject).toBe("Detail Test")
+      expect(detail.Subject).toContain("Detail Test")
+      expect(detail.Subject).toContain(TOKEN)
       expect(detail.HTML).toContain("<h1>Test Content</h1>")
       expect(detail.HTML).toContain("<p>This is the message body.</p>")
     })
@@ -134,124 +126,154 @@ describe("Mailpit API (Integration)", () => {
   })
 
   describe("message search", () => {
-    beforeEach(async () => {
-      // Ensure inbox is truly clear
-      await clearMailbox()
-      await new Promise((resolve) => setTimeout(resolve, 100))
-
-      // Seed multiple test emails
+    it("should search by recipient email", async () => {
+      // Send tokenized test emails for Alice
       await emailService.send({
         from: "sender@example.com",
         to: ["alice@example.com"],
-        subject: "Hello Alice",
+        subject: buildSubject("Hello Alice", TOKEN),
         body: React.createElement("p", null, "Message for Alice"),
       })
 
       await emailService.send({
         from: "sender@example.com",
-        to: ["bob@example.com"],
-        subject: "Hello Bob",
-        body: React.createElement("p", null, "Message for Bob"),
-      })
-
-      await emailService.send({
-        from: "sender@example.com",
         to: ["alice@example.com", "bob@example.com"],
-        subject: "Hello Everyone",
+        subject: buildSubject("Hello Everyone", TOKEN),
         body: React.createElement("p", null, "Message for both"),
       })
 
-      // Wait for all messages to be captured
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-    })
+      // Wait for first message to arrive
+      await waitForEmailBySubjectContains(TOKEN)
+      await new Promise((resolve) => setTimeout(resolve, 500)) // Buffer for second
 
-    it("should search by recipient email", async () => {
       // Search for Alice's emails
       const aliceMessages =
         await mailpitClient.searchByRecipient("alice@example.com")
 
-      expect(aliceMessages.length).toBe(2)
+      // Filter to only our tokenized messages
+      const tokenizedAliceMessages = aliceMessages.filter((msg) =>
+        msg.Subject.includes(TOKEN),
+      )
 
-      const subjects = aliceMessages.map((msg) => msg.Subject).sort()
-      expect(subjects).toEqual(["Hello Alice", "Hello Everyone"])
+      expect(tokenizedAliceMessages.length).toBe(2)
+
+      const subjects = tokenizedAliceMessages.map((msg) => msg.Subject).sort()
+      expect(subjects.some((s) => s.includes("Hello Alice"))).toBe(true)
+      expect(subjects.some((s) => s.includes("Hello Everyone"))).toBe(true)
     })
 
     it("should search by subject", async () => {
+      // Send test email with tokenized subject
+      await emailService.send({
+        from: "sender@example.com",
+        to: ["bob@example.com"],
+        subject: buildSubject("Hello Bob", TOKEN),
+        body: React.createElement("p", null, "Message for Bob"),
+      })
+
+      // Wait for message
+      await waitForEmailBySubjectContains(TOKEN)
+
       // Search for messages with "Bob" in subject
       const bobMessages = await mailpitClient.searchBySubject("Bob")
 
-      expect(bobMessages.length).toBeGreaterThanOrEqual(1)
+      // Filter to only our tokenized message
+      const tokenizedBobMessages = bobMessages.filter((msg) =>
+        msg.Subject.includes(TOKEN),
+      )
 
-      const hasHelloBob = bobMessages.some((msg) => msg.Subject === "Hello Bob")
-      expect(hasHelloBob).toBe(true)
+      expect(tokenizedBobMessages.length).toBeGreaterThanOrEqual(1)
+      expect(
+        tokenizedBobMessages.some((msg) => msg.Subject.includes("Hello Bob")),
+      ).toBe(true)
     })
 
     it("should return empty array for non-matching search", async () => {
-      // Search for non-existent recipient
+      // Search for non-existent recipient (should not include our test data)
       const messages = await mailpitClient.searchByRecipient(
-        "nonexistent@example.com",
+        "nonexistent-never-used-12345@example.com",
       )
 
       expect(messages).toEqual([])
     })
 
     it("should be case-insensitive for recipient search", async () => {
+      // Send tokenized test email
+      await emailService.send({
+        from: "sender@example.com",
+        to: ["alice@example.com"],
+        subject: buildSubject("Case Test", TOKEN),
+        body: React.createElement("p", null, "Case insensitive test"),
+      })
+
+      // Wait for message
+      await waitForEmailBySubjectContains(TOKEN)
+
       // Search with uppercase
       const messages =
         await mailpitClient.searchByRecipient("ALICE@EXAMPLE.COM")
 
-      expect(messages.length).toBeGreaterThanOrEqual(1)
+      // Filter to our tokenized message
+      const tokenizedMessages = messages.filter((msg) =>
+        msg.Subject.includes(TOKEN),
+      )
+
+      expect(tokenizedMessages.length).toBeGreaterThanOrEqual(1)
     })
   })
 
   describe("inbox management", () => {
     it("should clear all messages", async () => {
-      // Send test email
+      // Note: This test uses global clearInbox which affects all messages
+      // In parallel execution, avoid this pattern or use with caution
+      
+      // Send tokenized test email
       await emailService.send({
         from: "sender@example.com",
         to: ["recipient@example.com"],
-        subject: "To Be Deleted",
+        subject: buildSubject("To Be Deleted", TOKEN),
         body: React.createElement("p", null, "This will be deleted"),
       })
 
       // Wait for message
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await waitForEmailBySubjectContains(TOKEN)
 
-      // Verify message exists
-      let messages = await mailpitClient.listMessages()
-      expect(messages.length).toBeGreaterThan(0)
+      // Verify our tokenized message exists
+      const tokenizedMessages = await findMessagesBySubjectContains(TOKEN)
+      expect(tokenizedMessages.length).toBeGreaterThan(0)
 
-      // Clear inbox
+      // Clear inbox (affects ALL messages - use cautiously in parallel tests)
       await mailpitClient.clearInbox()
 
       // Verify inbox is empty
-      messages = await mailpitClient.listMessages()
-      expect(messages.length).toBe(0)
+      const allMessages = await mailpitClient.listMessages()
+      expect(allMessages.length).toBe(0)
     })
 
     it("should delete specific message", async () => {
-      // Send test emails
+      // Send tokenized test emails
       await emailService.send({
         from: "sender@example.com",
         to: ["recipient1@example.com"],
-        subject: "Keep This",
+        subject: buildSubject("Keep This", TOKEN),
         body: React.createElement("p", null, "Keep this message"),
       })
 
       await emailService.send({
         from: "sender@example.com",
         to: ["recipient2@example.com"],
-        subject: "Delete This",
+        subject: buildSubject("Delete This", TOKEN),
         body: React.createElement("p", null, "Delete this message"),
       })
 
-      // Wait for messages
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      // Wait for first message
+      await waitForEmailBySubjectContains(TOKEN)
+      await new Promise((resolve) => setTimeout(resolve, 500)) // Buffer for second
 
-      // Find message to delete
-      const messages = await mailpitClient.listMessages()
-      const messageToDelete = messages.find(
-        (msg) => msg.Subject === "Delete This",
+      // Find tokenized messages
+      const tokenizedMessages = await findMessagesBySubjectContains(TOKEN)
+      const messageToDelete = tokenizedMessages.find((msg) =>
+        msg.Subject.includes("Delete This"),
       )
       expect(messageToDelete).toBeDefined()
 
@@ -265,15 +287,15 @@ describe("Mailpit API (Integration)", () => {
         await mailpitClient.deleteMessage(messageToDelete.ID)
 
         // Verify message was deleted
-        const remainingMessages = await mailpitClient.listMessages()
-        const deletedMessage = remainingMessages.find(
+        const remainingTokenized = await findMessagesBySubjectContains(TOKEN)
+        const deletedMessage = remainingTokenized.find(
           (msg) => msg.ID === messageToDelete.ID,
         )
         expect(deletedMessage).toBeUndefined()
 
         // Verify other message still exists
-        const keptMessage = remainingMessages.find(
-          (msg) => msg.Subject === "Keep This",
+        const keptMessage = remainingTokenized.find((msg) =>
+          msg.Subject.includes("Keep This"),
         )
         expect(keptMessage).toBeDefined()
       } catch (error) {
@@ -292,11 +314,11 @@ describe("Mailpit API (Integration)", () => {
 
   describe("content verification", () => {
     it("should verify email content with helper function", async () => {
-      // Send test email
+      // Send tokenized test email
       await emailService.send({
         from: "verify@example.com",
         to: ["recipient@example.com"],
-        subject: "Content Verification Test",
+        subject: buildSubject("Content Verification Test", TOKEN),
         body: React.createElement(
           "div",
           null,
@@ -306,57 +328,42 @@ describe("Mailpit API (Integration)", () => {
       })
 
       // Wait for message
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Get message
-      const messages = await mailpitClient.listMessages()
-      const message = messages.find(
-        (msg) => msg.Subject === "Content Verification Test",
-      )
-      expect(message).toBeDefined()
-
-      if (!message) {
-        throw new Error("Message not found")
-      }
+      const message = await waitForEmailBySubjectContains(TOKEN)
 
       const detail = await mailpitClient.getMessage(message.ID)
 
-      // Verify content using helper
-      verifyEmailContent(detail, {
-        subject: "Content Verification Test",
-        from: "verify@example.com",
-        to: ["recipient@example.com"],
-        htmlIncludes: ["<h1>Welcome</h1>", "<p>This is the content.</p>"],
-      })
+      // Verify content using helper (partial subject match for tokenized)
+      expect(detail.Subject).toContain("Content Verification Test")
+      expect(detail.Subject).toContain(TOKEN)
+      expect(detail.From.Address).toBe("verify@example.com")
+      expect(detail.To[0].Address).toBe("recipient@example.com")
+      expect(detail.HTML).toContain("<h1>Welcome</h1>")
+      expect(detail.HTML).toContain("<p>This is the content.</p>")
     })
 
     it("should detect content mismatches", async () => {
-      // Send test email
+      // Send tokenized test email
       await emailService.send({
         from: "test@example.com",
         to: ["recipient@example.com"],
-        subject: "Mismatch Test",
+        subject: buildSubject("Mismatch Test", TOKEN),
         body: React.createElement("p", null, "Actual content"),
       })
 
       // Wait for message
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Get message
-      const messages = await mailpitClient.listMessages()
-      const message = messages[0]
+      const message = await waitForEmailBySubjectContains(TOKEN)
       const detail = await mailpitClient.getMessage(message.ID)
 
       // Verify content mismatch is detected
       expect(() => {
         verifyEmailContent(detail, {
-          subject: "Wrong Subject",
+          subject: "Completely Wrong Subject That Won't Match",
         })
       }).toThrow(/Subject mismatch/)
 
       expect(() => {
         verifyEmailContent(detail, {
-          htmlIncludes: ["This text does not exist"],
+          htmlIncludes: ["This text does not exist anywhere"],
         })
       }).toThrow(/HTML missing expected text/)
     })

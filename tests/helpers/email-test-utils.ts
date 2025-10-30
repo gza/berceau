@@ -311,3 +311,93 @@ export async function waitForEmails(
 
   return results
 }
+
+/**
+ * Generate a unique test token for isolating test messages
+ *
+ * Creates a token combining timestamp and random string to uniquely identify
+ * messages created by a specific test, enabling parallel test execution without
+ * shared state conflicts.
+ *
+ * @returns A unique token string
+ *
+ * @example
+ * ```typescript
+ * const TOKEN = generateTestToken();
+ * const subject = buildSubject('Test Email', TOKEN);
+ * ```
+ */
+export function generateTestToken(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+}
+
+/**
+ * Build a subject line with embedded test token
+ *
+ * Appends a test token to a base subject to create a unique subject line
+ * that can be used to identify and filter test messages.
+ *
+ * @param base - Base subject text
+ * @param token - Test token from generateTestToken
+ * @returns Subject line with token
+ *
+ * @example
+ * ```typescript
+ * const subject = buildSubject('Welcome Email', TOKEN);
+ * // Result: "Welcome Email [t:1234567890-abc123]"
+ * ```
+ */
+export function buildSubject(base: string, token: string): string {
+  return `${base} [t:${token}]`
+}
+
+/**
+ * Wait for an email with subject containing a specific fragment
+ *
+ * Polls Mailpit until a message with a subject containing the given fragment
+ * is found. Useful for waiting on tokenized test messages.
+ *
+ * @param fragment - Text fragment to search for in subject
+ * @param options - Configuration options
+ * @returns The first email matching the subject fragment
+ *
+ * @example
+ * ```typescript
+ * const email = await waitForEmailBySubjectContains(TOKEN);
+ * ```
+ */
+export async function waitForEmailBySubjectContains(
+  fragment: string,
+  options: {
+    timeoutMs?: number
+    pollIntervalMs?: number
+    client?: MailpitClient
+  } = {},
+): Promise<MailpitMessageSummary> {
+  return waitForEmail((m) => m.Subject.includes(fragment), options)
+}
+
+/**
+ * Find all messages with subject containing a specific fragment
+ *
+ * Retrieves all messages from Mailpit whose subject contains the given fragment.
+ * Does not wait; returns current matching messages immediately.
+ *
+ * @param fragment - Text fragment to search for in subject
+ * @param client - Mailpit client instance (default: creates new client)
+ * @returns Array of matching messages
+ *
+ * @example
+ * ```typescript
+ * const messages = await findMessagesBySubjectContains(TOKEN);
+ * expect(messages.length).toBe(2);
+ * ```
+ */
+export async function findMessagesBySubjectContains(
+  fragment: string,
+  client?: MailpitClient,
+): Promise<MailpitMessageSummary[]> {
+  const mailpitClient = client ?? createMailpitClient()
+  const all = await mailpitClient.listMessages()
+  return all.filter((m) => m.Subject.includes(fragment))
+}
