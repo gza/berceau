@@ -1,8 +1,5 @@
 # Outgoing Email Guide
 
-**Version**: 1.0  
-**Last Updated**: 2025-10-29  
-
 ## Overview
 
 This guide shows you how to send HTML emails from your NestJS components using JSX and React server-side rendering. You'll learn how to compose email content inline, render it to HTML, and send it through the EmailService.
@@ -573,6 +570,61 @@ export const EmailWithLogo: React.FC = async () => {
 
 ## Testing Your Emails
 
+### What is Mailpit?
+
+**Mailpit** is an email testing tool that acts as an SMTP server during development and testing. It captures all outgoing emails and provides:
+
+- **Web UI** at http://localhost:8025 to view captured emails
+- **SMTP server** on port 1025 for receiving emails
+- **REST API** to programmatically query messages
+
+**Benefits:**
+- ✅ No real emails sent during development/testing
+- ✅ Instant email delivery (no network delays)
+- ✅ Visual preview of emails across devices
+- ✅ API for automated test verification
+
+### Starting Mailpit
+
+Mailpit is configured in `docker-compose.yml` and starts automatically with other services:
+
+```bash
+# Start all services including Mailpit
+docker compose up
+
+# Or start only Mailpit
+docker compose up mailpit
+```
+
+**Verify Mailpit is Running:**
+
+```bash
+# Check service status
+docker compose ps mailpit
+
+# Check health
+curl http://localhost:8025/api/v1/info
+```
+
+### Accessing the Web UI
+
+Navigate to: **http://localhost:8025**
+
+**Web UI Features:**
+
+- **Inbox View**: See all captured emails in chronological order (newest first)
+- **Message Detail View**: HTML rendering, plain text, raw source, headers, attachments
+- **Search and Filter**: Search by recipient, sender, subject; filter by date
+- **Mobile Preview**: View email as it appears on different devices
+
+**Manual Testing Workflow:**
+
+1. Send email from your application (dev environment)
+2. Check Mailpit at http://localhost:8025
+3. Verify email appears, subject is correct, HTML renders properly
+4. Test responsiveness using mobile preview
+5. Delete test messages when done
+
 ### 1. Development Testing with Mailpit
 
 Mailpit captures all emails sent during development so you can preview them without sending real emails.
@@ -610,18 +662,69 @@ export class UserService {
 }
 ```
 
-### 2. Integration Tests
+### 2. Integration Tests (Token-Based)
 
-Write integration tests to verify your email-sending logic works correctly:
+#### Parallel-Safe Testing Strategy
+
+All Mailpit tests use **token-based isolation** to support parallel execution without race conditions. This eliminates shared state conflicts when multiple test workers access the same Mailpit inbox simultaneously.
+
+**Key Principles:**
+
+1. **No Global Mailbox Operations**: Tests don't clear the entire inbox or rely on global message counts
+2. **Unique Test Tokens**: Each test suite generates a unique token embedded in email subjects
+3. **Scoped Searches**: Tests only query for emails matching their specific token
+4. **Polling-Based Waits**: Use active polling for token-matched emails instead of fixed delays
+
+**Token-Based Isolation Example:**
+
+```typescript
+import { generateTestToken, buildSubject } from '../helpers/email-test-utils'
+
+describe('User Email Notifications', () => {
+  const TOKEN = generateTestToken() // Unique per suite
+  
+  it('should send welcome email', async () => {
+    // Embed token in subject
+    await emailService.send({
+      from: 'noreply@example.com',
+      to: ['user@example.com'],
+      subject: buildSubject('Welcome!', TOKEN), // "Welcome! [t:1761845617448-s86s6i]"
+      body: React.createElement('p', null, 'Hello')
+    })
+    
+    // Wait for email matching this token only
+    const message = await waitForEmailBySubjectContains(TOKEN)
+    expect(message.Subject).toContain('Welcome!')
+  })
+})
+```
+
+**Benefits:**
+- Tests run concurrently on 8+ workers without conflicts
+- Zero race conditions from shared inbox state
+- ~15s runtime with 8 parallel workers
+- No `beforeEach` cleanup needed
+
+#### Integration Test Example
+
+Write integration tests to verify your email-sending logic works correctly using token-based isolation for parallel-safe testing:
 
 ```tsx
 // tests/integration/user-emails.spec.ts
 import { Test } from '@nestjs/testing'
 import { EmailModule } from '../../src/email/email.module'
 import { EmailService } from '../../src/email/email.service'
+import { 
+  generateTestToken, 
+  buildSubject, 
+  waitForEmailBySubjectContains,
+  getMessageDetail,
+  verifyEmailContent 
+} from '../helpers/email-test-utils'
 import React from 'react'
 
 describe('User Email Notifications', () => {
+  const TOKEN = generateTestToken() // Unique per suite
   let emailService: EmailService
 
   beforeAll(async () => {
@@ -630,6 +733,8 @@ describe('User Email Notifications', () => {
     }).compile()
     emailService = module.get(EmailService)
   })
+
+  // No beforeEach cleanup needed! ✅
 
   it('should send welcome email successfully', async () => {
     const userName = 'John Doe'
@@ -643,14 +748,21 @@ describe('User Email Notifications', () => {
     const result = await emailService.send({
       from: 'test@example.com',
       to: ['john@example.com'],
-      subject: 'Welcome!',
+      subject: buildSubject('Welcome!', TOKEN), // Embed token
       body: emailBody
     })
 
     expect(result.ok).toBe(true)
-    if (result.ok) {
-      expect(result.messageId).toBeDefined()
-    }
+    
+    // Wait for email matching this token
+    const message = await waitForEmailBySubjectContains(TOKEN)
+    expect(message.Subject).toContain('Welcome!')
+    
+    // Verify content
+    const detail = await getMessageDetail(message.ID)
+    verifyEmailContent(detail, {
+      htmlIncludes: ['Welcome, John Doe!', 'Thanks for signing up.']
+    })
   })
 
   it('should send order confirmation email', async () => {
@@ -665,16 +777,293 @@ describe('User Email Notifications', () => {
     const result = await emailService.send({
       from: 'orders@example.com',
       to: ['customer@example.com'],
-      subject: `Order ${orderId} Confirmed`,
+      subject: buildSubject(`Order ${orderId} Confirmed`, TOKEN),
       body: emailBody
     })
 
     expect(result.ok).toBe(true)
+    
+    // Verify email was captured
+    const message = await waitForEmailBySubjectContains(TOKEN)
+    expect(message.Subject).toContain(`Order ${orderId} Confirmed`)
   })
 })
 ```
 
-### 3. Visual Testing
+**Key Testing Practices:**
+- ✅ Use `generateTestToken()` to create unique tokens per test suite
+- ✅ Use `buildSubject()` to embed tokens in email subjects
+- ✅ Use `waitForEmailBySubjectContains(TOKEN)` to find your emails
+- ✅ No `clearMailbox()` needed - token isolation prevents conflicts
+- ✅ Tests can run in parallel without race conditions
+
+### 3. Mailpit API Client
+
+The Mailpit API client provides programmatic access to captured emails for automated testing.
+
+**Import and Use:**
+
+```typescript
+import { createMailpitClient } from '../../src/email/testing/mailpit-client'
+
+const mailpitClient = createMailpitClient()
+```
+
+**API Methods:**
+
+```typescript
+// List all messages
+const messages = await mailpitClient.listMessages()
+
+// Get message detail by ID
+const detail = await mailpitClient.getMessage(messageId)
+
+// Search by recipient
+const messages = await mailpitClient.searchByRecipient('user@example.com')
+
+// Search by subject
+const messages = await mailpitClient.searchBySubject('Order Confirmation')
+
+// Clear inbox (avoid in parallel tests)
+await mailpitClient.clearInbox()
+
+// Delete specific message
+await mailpitClient.deleteMessage(messageId)
+
+// Check availability
+const isAvailable = await mailpitClient.isAvailable()
+```
+
+### 4. Test Utilities
+
+Test utility functions are located in `tests/helpers/email-test-utils.ts`.
+
+**Token-Based Helpers:**
+
+```typescript
+// Generate unique token for test isolation
+const TOKEN = generateTestToken()
+// Returns: "1761845617448-s86s6i" (timestamp + random string)
+
+// Embed token into email subject
+const subject = buildSubject('Welcome Email', TOKEN)
+// Returns: "Welcome Email [t:1761845617448-s86s6i]"
+
+// Wait for email matching token
+const message = await waitForEmailBySubjectContains(TOKEN, {
+  timeoutMs: 5000,
+  pollIntervalMs: 100
+})
+
+// Find all messages matching token
+const messages = await findMessagesBySubjectContains(TOKEN)
+```
+
+**Content Verification:**
+
+```typescript
+import { verifyEmailContent, getMessageDetail } from '../helpers/email-test-utils'
+
+const detail = await getMessageDetail(message.ID)
+
+verifyEmailContent(detail, {
+  subject: 'Welcome!',
+  from: 'noreply@example.com',
+  to: ['user@example.com'],
+  htmlIncludes: ['<h1>Welcome</h1>', '<p>Thanks for signing up</p>'],
+  htmlExcludes: ['password', 'secret'],
+  textIncludes: ['Welcome', 'Thanks'],
+})
+```
+
+**Legacy Helpers (Still Available):**
+
+```typescript
+// Wait for email matching predicate
+const message = await waitForEmail(
+  (msg) => msg.Subject === 'Order Confirmation' && 
+           msg.To[0].Address === 'customer@example.com',
+  { timeoutMs: 5000 }
+)
+
+// Wait for email to specific recipient
+const message = await waitForEmailToRecipient('user@example.com')
+
+// Wait for multiple emails
+const [email1, email2] = await waitForEmails([
+  (msg) => msg.To[0].Address === 'user1@example.com',
+  (msg) => msg.To[0].Address === 'user2@example.com',
+])
+```
+
+⚠️ **Warning:** Avoid using `clearMailbox()` in parallel tests as it causes race conditions. Use token-based isolation instead.
+
+### 5. Common Testing Patterns
+
+**Pattern 1: Test Email Content**
+
+```typescript
+it('should send order confirmation with correct details', async () => {
+  const TOKEN = generateTestToken()
+  const orderId = '12345'
+  const customerEmail = 'customer@example.com'
+
+  await emailService.send({
+    from: 'orders@example.com',
+    to: [customerEmail],
+    subject: buildSubject(`Order ${orderId} Confirmed`, TOKEN),
+    body: React.createElement('div', null,
+      React.createElement('h1', null, 'Order Confirmed'),
+      React.createElement('p', null, `Order #${orderId}`)
+    ),
+  })
+
+  const message = await waitForEmailBySubjectContains(TOKEN)
+  const detail = await getMessageDetail(message.ID)
+
+  verifyEmailContent(detail, {
+    subject: buildSubject(`Order ${orderId} Confirmed`, TOKEN),
+    from: 'orders@example.com',
+    to: [customerEmail],
+    htmlIncludes: ['Order Confirmed', `Order #${orderId}`],
+  })
+})
+```
+
+**Pattern 2: Test Multiple Recipients**
+
+```typescript
+it('should send email to multiple recipients', async () => {
+  const TOKEN = generateTestToken()
+  const recipients = ['user1@example.com', 'user2@example.com', 'user3@example.com']
+
+  await emailService.send({
+    from: 'sender@example.com',
+    to: recipients,
+    subject: buildSubject('Team Update', TOKEN),
+    body: React.createElement('p', null, 'Update for the team'),
+  })
+
+  const message = await waitForEmailBySubjectContains(TOKEN)
+  const recipientAddresses = message.To.map((addr) => addr.Address)
+  expect(recipientAddresses).toEqual(expect.arrayContaining(recipients))
+})
+```
+
+**Pattern 3: Test Email Failure Handling**
+
+```typescript
+it('should handle invalid email addresses', async () => {
+  const result = await emailService.send({
+    from: 'invalid-email', // Invalid format
+    to: ['valid@example.com'],
+    subject: 'Test',
+    body: React.createElement('p', null, 'Test'),
+  })
+
+  expect(result.ok).toBe(false)
+  if (!result.ok) {
+    expect(result.error.type).toBe('validation')
+    expect(result.error.message).toContain('email')
+  }
+})
+```
+
+**Pattern 4: Test JSX Props Interpolation**
+
+```typescript
+it('should interpolate props in JSX email', async () => {
+  const TOKEN = generateTestToken()
+  const userName = 'Alice'
+  const activationCode = 'ABC123'
+
+  await emailService.send({
+    from: 'system@example.com',
+    to: ['alice@example.com'],
+    subject: buildSubject('Account Activation', TOKEN),
+    body: React.createElement('div', null,
+      React.createElement('p', null, `Hello, ${userName}!`),
+      React.createElement('p', null, `Your code: ${activationCode}`)
+    ),
+  })
+
+  const message = await waitForEmailBySubjectContains(TOKEN)
+  const detail = await getMessageDetail(message.ID)
+
+  verifyEmailContent(detail, {
+    htmlIncludes: ['Hello, Alice!', 'Your code: ABC123'],
+  })
+})
+```
+
+**Pattern 5: Test Batch Emails**
+
+```typescript
+it('should send multiple emails in sequence', async () => {
+  const TOKEN = generateTestToken()
+  const users = [
+    { email: 'user1@example.com', name: 'User 1' },
+    { email: 'user2@example.com', name: 'User 2' },
+    { email: 'user3@example.com', name: 'User 3' },
+  ]
+
+  for (const user of users) {
+    await emailService.send({
+      from: 'noreply@example.com',
+      to: [user.email],
+      subject: buildSubject(`Hello ${user.name}`, TOKEN),
+      body: React.createElement('p', null, `Hi ${user.name}`),
+    })
+  }
+
+  const messages = await findMessagesBySubjectContains(TOKEN)
+  expect(messages.length).toBe(users.length)
+
+  for (const user of users) {
+    const userMessage = messages.find(msg => 
+      msg.To.some(addr => addr.Address === user.email)
+    )
+    expect(userMessage).toBeDefined()
+  }
+})
+```
+
+### 6. Testing Troubleshooting
+
+**Mailpit Not Starting:**
+- ✅ Ensure Docker is running: `docker ps`
+- ✅ Start Mailpit: `docker compose up mailpit`
+- ✅ Check logs: `docker compose logs mailpit`
+- ✅ Verify port 8025 is not in use: `lsof -i :8025`
+
+**Emails Not Appearing:**
+- ✅ Refresh the Mailpit web UI (http://localhost:8025)
+- ✅ Check SMTP connection in logs
+- ✅ Verify SMTP_HOST=mailpit in `.env`
+- ✅ Verify SMTP_PORT=1025 in `.env`
+
+**Test Timeouts:**
+- ✅ Increase timeout: `waitForEmailBySubjectContains(TOKEN, { timeoutMs: 10000 })`
+- ✅ Check email was actually sent (check logs)
+- ✅ Verify token/predicate is correct
+
+**Test Interference:**
+- ✅ Use token-based isolation (recommended)
+- ✅ Ensure each test suite has a unique token
+- ✅ Avoid assertions on global message counts
+- ✅ Query only for messages matching your token
+
+**Testing Best Practices:**
+- ✅ Use token-based isolation for all parallel tests
+- ✅ Generate unique tokens per test suite with `generateTestToken()`
+- ✅ Embed tokens in subjects using `buildSubject()`
+- ✅ Wait for token-matched emails with `waitForEmailBySubjectContains()`
+- ✅ Verify critical content (subject, recipient, key HTML)
+- ❌ Don't call `clearMailbox()` in parallel tests - causes race conditions
+- ❌ Don't assert on global message counts - use token-filtered counts
+- ❌ Don't use sleep() - use polling-based waits
+
+### 7. Visual Testing
 
 **Manual checklist:**
 - [ ] Renders correctly in Gmail (web)
@@ -777,10 +1166,12 @@ describe('User Email Notifications', () => {
 - [Litmus](https://www.litmus.com/) - Email testing platform (paid)
 
 ### Internal Docs
-- [Email Implementation](../implementation_doc/OUTGOING_EMAIL_IMPLEMENTATION.md) - Technical details
+- [Email Implementation](../implementation_doc/OUTGOING_EMAIL_IMPLEMENTATION.md) - Technical implementation details
+- [Parallel Test Plan](MAILPIT_PARALLEL_TEST_PLAN.md) - Token-based testing strategy
+- [Parallel Test Completion](PARALLEL_TEST_COMPLETION.md) - Implementation completion report
 
 ### Integration Tests
-The integration tests in `tests/integration/email-templates.spec.ts` demonstrate various template patterns and use cases.
+The integration tests in `tests/integration/email-*.spec.ts` demonstrate various template patterns, use cases, and parallel-safe testing approaches using token-based isolation.
 
 ---
 

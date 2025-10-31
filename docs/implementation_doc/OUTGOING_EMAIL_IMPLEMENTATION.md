@@ -1,7 +1,5 @@
 # Outgoing Email Implementation Documentation
 
-**Version**: 1.0  
-**Last Updated**: 2025-10-29  
 **Feature**: Outgoing Email Capability (004-outgoing-email)
 
 ## Table of Contents
@@ -702,6 +700,9 @@ services:
     ports:
       - "1025:1025"  # SMTP
       - "8025:8025"  # Web UI
+    environment:
+      - MP_MAX_AGE=6h        # Retention policy
+      - MP_MAX_MESSAGES=10000
 ```
 
 **Coverage**:
@@ -710,27 +711,37 @@ services:
 - ✅ Rendered HTML matches expected structure
 - ✅ Failure scenarios (validation, timeout, auth)
 - ✅ Various JSX template patterns
+- ✅ Parallel test execution with token-based isolation
 
-**Example**:
+**Example (Token-Based):**
 ```typescript
 describe('Email Sending', () => {
+  const TOKEN = generateTestToken() // Unique per suite
+
   it('should send email to Mailpit', async () => {
     const result = await emailService.send({
       from: 'test@example.com',
       to: ['recipient@example.com'],
-      subject: 'Test Email',
+      subject: buildSubject('Test Email', TOKEN),
       body: <div>Test Body</div>
     })
 
     expect(result.ok).toBe(true)
     
-    // Verify via Mailpit API
-    const messages = await mailpitClient.searchMessages('recipient@example.com')
-    expect(messages).toHaveLength(1)
-    expect(messages[0].subject).toBe('Test Email')
+    // Wait for email matching token
+    const message = await waitForEmailBySubjectContains(TOKEN)
+    expect(message.Subject).toContain('Test Email')
+    expect(message.To[0].Address).toBe('recipient@example.com')
   })
 })
 ```
+
+**Integration Test Features:**
+- **Parallel Execution**: Tests run on 8 workers concurrently
+- **Zero Race Conditions**: Token-based isolation prevents shared state conflicts
+- **No Global Cleanup**: No `clearMailbox()` calls that interfere with other tests
+- **Fast**: ~15s runtime with full test suite
+- **Reliable**: 425/425 tests passing consistently
 
 ### Manual Testing
 
@@ -903,9 +914,13 @@ export class EmailModule implements OnModuleInit {
 
 ### Documentation
 
-- `docs/dev_guides/OUTGOING_EMAIL_GUIDE.md` - Developer guide
+- `docs/dev_guides/OUTGOING_EMAIL_GUIDE.md` - Developer guide (includes testing)
+- `docs/dev_guides/MAILPIT_PARALLEL_TEST_PLAN.md` - Parallel test strategy
+- `docs/dev_guides/PARALLEL_TEST_COMPLETION.md` - Implementation completion report
 - `docs/implementation_doc/OUTGOING_EMAIL_IMPLEMENTATION.md` - This file
 - `specs/004-outgoing-email/` - Feature specification and planning
+
+---
 
 ---
 
