@@ -27,3 +27,27 @@ In the resulting HTML we can maybe remove the x- prefix.
 # 🔗 Link redirector service
 
 To track outbound link clicks from emails, we could implement a simple redirector service.
+
+# 🛡️ Authorization
+
+- Role based access control
+  - Role are namespace-like strings, example : `mycomponent.subcomponent.action`
+  - 
+
+# 🧒 User management
+
+- User management UI
+  - List users
+  - Create users
+  - Edit users
+  - Delete users
+
+# 🛡️ Authorization
+
+
+
+
+
+# API keys
+
+- Possibility to generate API keys for rest API access

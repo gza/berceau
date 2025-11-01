@@ -8,4 +8,4 @@ applyTo: "**/tasks.md"
 * Always update and or create implementation documentation (`docs/implementation_doc`) when adding new features or changing existing ones.
   * Include architecture diagrams, design decisions, and code examples.
 * Apply the KISS principle: Keep It Simple, Stupid. Avoid unnecessary complexity.
-* Add a TOP10 OWASP Review in the last Phase.
+* Add a TOP10 OWASP & TOP 25 CWE Review in the last Phase.
